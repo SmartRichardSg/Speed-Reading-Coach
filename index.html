@@ -1,356 +1,434 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#277a72">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
 <title>Speed Reading Coach</title>
 <style>
-:root{--teal:#277a72;--light:#e8f7f4;--bg:#f4f8f7;--card:#fff;--text:#18312f;--muted:#687a77;--line:#d8e4e1}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-.app{max-width:720px;margin:auto;padding:18px 15px 45px}
-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.logo{width:48px;height:48px;border-radius:15px;background:var(--teal);display:grid;place-items:center;font-size:25px}
-h1{font-size:23px;margin:0;font-weight:800}.tag{color:var(--muted);font-size:14px;margin-top:2px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
-h2{font-size:20px;margin:0 0 8px}.small{font-size:14px;line-height:1.6;color:var(--muted)}
-.badge{display:inline-block;background:var(--light);color:var(--teal);font-weight:800;font-size:12px;padding:6px 10px;border-radius:999px}
-button,select{font:inherit;min-height:46px;border-radius:13px;padding:11px 14px;border:1px solid var(--line);background:white;color:var(--text)}
-button{font-weight:700;cursor:pointer}.primary{background:var(--teal);color:white;border-color:var(--teal);width:100%}
-.secondary{background:#f5faf9}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:135px}
-.hidden{display:none!important}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.stat{background:#f6faf9;border-radius:15px;padding:13px}.stat span{font-size:13px;color:var(--muted)}.stat strong{display:block;font-size:22px;margin-top:4px}
-.story-title{font:700 24px Georgia,serif;margin:8px 0 12px}.story{font:18px/1.8 Georgia,serif}
-.notice{background:#fff8e8;border:1px solid #ead9ad;border-radius:13px;padding:12px;font-size:14px;line-height:1.55}
-.question{margin-top:18px}.choice{width:100%;text-align:left;margin-top:8px}.choice.selected{border-color:var(--teal);background:var(--light)}
-.reader{font:700 34px Georgia,serif;min-height:110px;display:grid;place-items:center;text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:15px 0}
-.progress{height:8px;background:#e5eeec;border-radius:99px;overflow:hidden}.progress div{height:100%;background:var(--teal);width:0}
-.big{font-size:38px;font-weight:800;text-align:center;margin:12px 0}
-@media(max-width:430px){.story{font-size:17px}.reader{font-size:30px}}
+:root{--teal:#0f766e;--teal2:#115e59;--bg:#f4fbfa;--card:#fff;--ink:#17332f;--muted:#647774;--line:#d7e7e4;--soft:#e7f5f2;--danger:#b42318;--shadow:0 6px 22px rgba(15,118,110,.10)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+header{background:linear-gradient(135deg,var(--teal),#149184);color:white;padding:24px 18px 20px;position:sticky;top:0;z-index:5}
+h1{font-size:24px;margin:0 0 4px}header p{margin:0;opacity:.9;font-size:14px}
+main{max-width:760px;margin:auto;padding:16px 14px 40px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:var(--shadow)}
+h2{font-size:20px;margin:0 0 10px}h3{font-size:16px;margin:0 0 6px}.muted{color:var(--muted);font-size:14px}
+button,select{font:inherit}button{border:0;border-radius:12px;padding:12px 15px;background:var(--teal);color:white;font-weight:700;cursor:pointer;margin:4px 4px 4px 0}button.secondary{background:var(--soft);color:var(--teal2);border:1px solid #b9ddd8}button.ghost{background:white;color:var(--teal2);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--soft);border-radius:14px;padding:12px}.stat b{display:block;font-size:22px;color:var(--teal2)}.stat span{font-size:12px;color:var(--muted)}
+.progressbar{height:9px;background:#e6eeee;border-radius:9px;overflow:hidden}.progressbar i{display:block;height:100%;background:var(--teal);width:0}
+.nav{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.nav button{width:100%;margin:0;padding:14px 8px}.nav small{display:block;font-weight:500;opacity:.8}
+.hidden{display:none!important}.pill{display:inline-block;background:var(--soft);color:var(--teal2);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700}
+.story{font-family:Georgia,serif;font-size:18px;line-height:1.8;white-space:pre-wrap}.reading{font-family:Georgia,serif;font-size:21px;line-height:1.85}
+.timer{font-size:42px;font-weight:800;text-align:center;color:var(--teal2);margin:12px 0}.big{font-size:30px;font-weight:800;text-align:center;color:var(--teal2)}
+.choice{display:block;width:100%;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500}.choice.selected{border:2px solid var(--teal);background:var(--soft)}
+input[type=range]{width:100%}input[type=text]{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px}
+.eye-stage{height:210px;border:1px solid var(--line);border-radius:16px;background:#fbfefd;position:relative;overflow:hidden;margin:14px 0}.target{width:26px;height:26px;border-radius:50%;background:var(--teal);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 9px var(--soft);transition:left .35s,top .35s}
+.group-stage{min-height:150px;display:flex;align-items:center;justify-content:center;background:#f7fcfb;border:1px solid var(--line);border-radius:16px;margin:14px 0;text-align:center;padding:20px}.group-word{font-size:30px;font-weight:800;color:var(--teal2)}
+.notice{background:#fff7e8;border:1px solid #f1d39a;color:#795b20;border-radius:12px;padding:11px;font-size:14px}.success{background:#edf9f1;border:1px solid #bfe3c8;color:#21633a;border-radius:12px;padding:11px}.error{background:#fff1f0;border:1px solid #efc2be;color:var(--danger);border-radius:12px;padding:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 4px}
+@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}.nav{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
-<main class="app">
 <header>
-  <div class="logo">📖</div>
-  <div><h1>Speed Reading Coach</h1><div class="tag">Read faster. Understand more. One step at a time.</div></div>
+<h1>📖 Speed Reading Coach</h1>
+<p>Build speed while protecting comprehension.</p>
 </header>
-
-<section id="home">
-  <div class="card">
-    <span class="badge">BEGINNER COURSE</span>
-    <h2 style="margin-top:10px">Learn speed reading through stories</h2>
-    <p class="small">First we measure your natural reading speed and comprehension. Then the app trains eye movement, word grouping and pace gradually.</p>
-    <div class="stats">
-      <div class="stat"><span>Last WPM</span><strong id="lastWpm">—</strong></div>
-      <div class="stat"><span>Best WPM</span><strong id="bestWpm">—</strong></div>
-      <div class="stat"><span>Comprehension</span><strong id="lastComp">—</strong></div>
-      <div class="stat"><span>Sessions</span><strong id="sessions">0</strong></div>
-      <div class="stat" style="grid-column:1/-1"><span>Baseline effective reading</span><strong id="baselineEffective">Not tested</strong></div>
-    </div>
-    <button class="primary" id="baselineButton" type="button">Start Baseline Reading</button>
-  </div>
-
-  <div class="card">
-    <h2>📚 Story Library</h2>
-    <p class="small">Training stories can be changed later. The baseline test always uses a separate unseen story.</p>
-    <select id="storySelect" style="width:100%">
-      <option value="train1">The Morning Train</option>
-      <option value="train2">The Island Lantern</option>
-    </select>
-  </div>
-
-  <div class="card">
-    <h2>Today's exercises</h2>
-    <div class="row">
-      <button class="secondary" id="eyeButton" type="button">👁 Eye Focus</button>
-      <button class="secondary" id="groupButton" type="button">🔤 Word Groups</button>
-    </div>
-  </div>
-</section>
-
-<section id="intro" class="hidden">
-  <div class="card">
-    <span class="badge">BASELINE TEST</span>
-    <h2 style="margin-top:10px">Let's find your natural reading speed</h2>
-    <p class="small">This is your starting measurement. Read the story at your normal comfortable pace. Do not deliberately rush.</p>
-    <div class="notice"><b>Important:</b> Try to understand the story because you will answer questions immediately afterwards.</div>
-    <button class="primary" id="beginButton" type="button" style="margin-top:14px">Begin Test</button>
-  </div>
-</section>
-
-<section id="reading" class="hidden">
-  <div class="card">
-    <span class="badge" id="readingBadge">BASELINE READING</span>
-    <div class="story-title" id="storyTitle"></div>
-    <p class="small" id="readingInstruction"></p>
-    <div class="story" id="storyText"></div>
-    <button class="primary" id="finishReading" type="button">I Finished Reading</button>
-  </div>
-</section>
-
-<section id="quiz" class="hidden">
-  <div class="card">
-    <span class="badge">COMPREHENSION</span>
-    <h2 style="margin-top:10px">How well did you understand it?</h2>
-    <p class="small">Choose the best answer. Do not go back to the story.</p>
-    <div id="questions"></div>
-    <button class="primary" id="checkQuiz" type="button" style="margin-top:16px">Check My Answers</button>
-  </div>
-</section>
-
-<section id="result" class="hidden">
-  <div class="card">
-    <span class="badge">YOUR BASELINE</span>
-    <h2 id="resultHeading" style="margin-top:10px">Your starting point</h2>
-    <div class="stats">
-      <div class="stat"><span>Reading speed</span><strong id="resultWpm">—</strong></div>
-      <div class="stat"><span>Comprehension</span><strong id="resultComp">—</strong></div>
-      <div class="stat"><span>Effective reading</span><strong id="resultEffective">—</strong></div>
-      <div class="stat"><span>Starting level</span><strong id="resultLevel">—</strong></div>
-    </div>
-    <p class="small" id="resultMessage"></p>
-    <button class="primary" id="trainingButton" type="button">Start Training</button>
-  </div>
-</section>
-
-<section id="training" class="hidden">
-  <div class="card">
-    <span class="badge">WORD GROUPING TRAINING</span>
-    <h2 style="margin-top:10px">Train your eyes to see groups</h2>
-    <p class="small">Read each phrase as a unit. Try not to pronounce every word separately in your head.</p>
-    <div class="big"><span id="trainingSpeed">150</span> <span style="font-size:15px">WPM</span></div>
-    <div class="progress"><div id="trainingProgress"></div></div>
-    <div class="reader" id="trainingWord">Ready?</div>
-    <div class="row">
-      <button class="secondary" id="pauseTraining" type="button">Pause</button>
-      <button class="secondary" id="finishTraining" type="button">Finish</button>
-    </div>
-  </div>
-</section>
-
-<section id="exercise" class="hidden">
-  <div class="card">
-    <span class="badge" id="exerciseBadge">EYE FOCUS</span>
-    <h2 id="exerciseTitle" style="margin-top:10px"></h2>
-    <p class="small" id="exerciseDescription"></p>
-    <div class="reader" id="exerciseVisual">•</div>
-    <button class="primary" id="exerciseStart" type="button">Start Exercise</button>
-    <button class="secondary" id="exerciseDone" type="button" style="width:100%;margin-top:9px">Done</button>
-  </div>
-</section>
-</main>
+<main id="app"></main>
 
 <script>
-(function(){
 "use strict";
 
-var baselineStory = {
+/* ---------- Data ---------- */
+const BASELINE = {
+  id:"baseline",
   title:"The Lighthouse Keeper",
-  text:"At the edge of the northern coast stood a small lighthouse that had guided ships for more than a hundred years. Every evening, before darkness settled over the sea, the keeper climbed the winding stairs and checked the great lamp. One winter night, thick clouds arrived without warning. The wind became stronger, and waves crashed against the rocks below. From the top window, the keeper noticed a fishing boat struggling to find the entrance to the harbour. He immediately checked the lamp and increased its brightness. The boat slowly changed direction and followed the beam towards the sheltered water. By midnight the storm had passed, and the fishermen reached the harbour safely. The next morning, the keeper found a small basket of fresh fish outside his door. There was no note, but he knew who had left it there.",
+  text:`Every evening, just before sunset, Daniel climbed the narrow stairs of the old lighthouse. The sea was usually calm at that hour, and the gulls circled above the rocks while fishing boats headed home.
+
+One autumn evening, Daniel noticed a small light moving far beyond the harbour. It appeared, disappeared, and then appeared again. At first he thought it was another boat, but the light was too high above the water.
+
+He took the old telescope from its case and looked again. The light came from a tiny cabin on a distant cliff. Daniel knew that cabin had been empty for years. Curious, he wrote down the time and watched until the mysterious light finally went out.
+
+The next morning he walked along the coast to investigate. Behind the cabin he found fresh footprints in the sand. They led to a narrow path and ended beside a wooden box. Inside was a collection of old maps, carefully wrapped in cloth.
+
+Daniel brought the box back to the lighthouse. Later that day, a local historian identified the maps as records made by sailors more than a hundred years earlier. Daniel had expected to find a mystery, but instead he had discovered a small piece of the coast's forgotten history.`,
   questions:[
-    ["What was the main purpose of the lighthouse?","To guide ships","To warn villagers","To store fishing equipment","To measure the weather","a"],
-    ["When did the keeper check the lamp?","At noon","Before darkness","After the storm","At sunrise","b"],
-    ["What did the keeper notice during the storm?","A broken boat","A fishing boat in difficulty","A fire on the beach","A group of sailors","b"],
-    ["What did he do to help the boat?","He went to sea","He sounded a bell","He increased the lamp's brightness","He closed the harbour","c"],
-    ["What did the fishermen leave the next morning?","A letter","A basket of fresh fish","A lantern","A new lamp","b"]
+    {q:"When did Daniel usually climb the lighthouse stairs?",a:["At sunrise","Just before sunset","At midnight","After breakfast"],correct:1},
+    {q:"What did Daniel first notice beyond the harbour?",a:["A large ship","A bird","A small moving light","A storm"],correct:2},
+    {q:"What did Daniel use to look at the distant light?",a:["A camera","An old telescope","A compass","A lantern"],correct:1},
+    {q:"Where did the footprints lead?",a:["To the harbour","To a lighthouse","To a narrow path and wooden box","To a fishing boat"],correct:2},
+    {q:"What was inside the wooden box?",a:["Coins","Old maps","Letters","Tools"],correct:1}
   ]
 };
 
-var stories = {
-  train1:{
-    title:"The Morning Train",
-    text:"The train moved slowly through the mountains as the morning mist began to lift. Daniel sat beside the window, watching the dark trees appear and disappear between patches of silver cloud. He had travelled this route many times, but that morning something felt different. At the next station, the train stopped beside a small wooden platform. An old man was waiting there with a blue suitcase. He climbed aboard, looked around the nearly empty carriage, and smiled at Daniel. A few minutes later, the train began its climb again. The old man pointed towards the valley and told Daniel about a forgotten walking path that led to a quiet lake above the village. Daniel had never heard of it. By the time the train reached the next station, he had already decided that one day he would return and find the path."
-  },
-  train2:{
-    title:"The Island Lantern",
-    text:"Every evening, Mara climbed the narrow hill behind the village to light a small lantern. The lantern stood beside an old stone wall and could be seen from the fishing boats far out at sea. Her grandfather had taught her the routine when she was a child. One stormy night, the wind became so strong that Mara almost turned back. Then she remembered how many fishermen depended on that small light. She continued up the hill, protected the flame with both hands, and carefully lit the lantern. Hours later, the storm passed. At dawn, a fishing boat returned safely to the harbour. Its captain thanked Mara and told her that the little light had helped them find their way home."
+const STORIES = [
+ {id:"morning-train",title:"The Morning Train",text:`The first train arrived at the little station while the town was still quiet. Maya stepped onto the platform carrying a small notebook and a cup of coffee. She had taken this train many times, but that morning she decided not to read or use her phone.
+
+Instead, she watched the countryside through the window. The train passed rows of houses, a river crossed by an old bridge, and fields covered with morning mist. At one station, an elderly man boarded and sat opposite her.
+
+He noticed Maya's notebook and asked whether she was a writer. Maya smiled and explained that she was trying to notice one new thing every day. The man thought for a moment and pointed towards the window.
+
+"Look at the trees," he said. "They are moving, but they are not going anywhere."
+
+Maya laughed. She wrote the sentence in her notebook. By the time the train reached the city, she had filled two pages—not with important events, but with small details she normally would have missed.`},
+ {id:"island-lantern",title:"The Island Lantern",text:`For many years, a small lantern stood on the highest point of the island. It was not large enough to guide ships across the whole sea, but fishermen said its warm light helped them find the narrow entrance to the bay.
+
+One summer, a young engineer named Leo arrived to repair it. The old lantern keeper showed him a wooden box containing spare glass, oil, and a hand-drawn map of the rocks.
+
+Leo expected the repair to take one day. Instead, strong winds kept him on the island for almost a week. During that time he learned how carefully the fishermen read the sea. They noticed the colour of the water, the direction of birds, and even the sound of waves against distant rocks.
+
+When the wind finally became calm, Leo repaired the lantern. Before leaving, he added one small improvement: a simple metal cover that protected the flame from strong gusts.
+
+Years later, the fishermen still used the lantern. Leo's repair had been useful, but he remembered that the most valuable lesson on the island had come from watching people who knew their sea extremely well.`}
+];
+
+/* ---------- Storage ---------- */
+const KEY="speedReadingCoachV2";
+const POSKEY="speedReadingStoryPositionsV1";
+function load(){
+  try{return JSON.parse(localStorage.getItem(KEY))||{baseline:null,sessions:[],eyeSessions:0,groupSessions:0}}
+  catch(e){return {baseline:null,sessions:[],eyeSessions:0,groupSessions:0}}
+}
+let state=load();
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function loadPositions(){
+  try{return JSON.parse(localStorage.getItem(POSKEY))||{}}
+  catch(e){return {}}
+}
+function savePosition(storyId, section){
+  const p=loadPositions(); p[storyId]=Math.max(0,section);
+  localStorage.setItem(POSKEY,JSON.stringify(p));
+}
+function getPosition(storyId){return Number(loadPositions()[storyId]||0)}
+function clearPosition(storyId){
+  const p=loadPositions(); delete p[storyId];
+  localStorage.setItem(POSKEY,JSON.stringify(p));
+}
+function storyParagraphs(text){
+  return text.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function words(text){return text.trim().split(/\s+/).filter(Boolean)}
+function calcWpm(count,seconds){return seconds>0?Math.round(count/(seconds/60)):0}
+function effective(wpm,comp){return Math.round(wpm*comp/100)}
+function fmtDate(ts){return new Date(ts).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}
+
+/* ---------- Router/UI ---------- */
+const app=document.getElementById("app");
+let timer=null, sessionStart=0, currentStory=null, currentMode=null, groupTimer=null, eyeTimer=null;
+
+function clearTimers(){
+  if(timer){clearInterval(timer);timer=null}
+  if(groupTimer){clearTimeout(groupTimer);groupTimer=null}
+  if(eyeTimer){clearInterval(eyeTimer);eyeTimer=null}
+}
+function nav(){
+  return `<div class="nav">
+    <button onclick="home()">🏠<small>Home</small></button>
+    <button onclick="baselineIntro()">🎯<small>Baseline</small></button>
+    <button onclick="training()">🏃<small>Training</small></button>
+    <button onclick="library()">📚<small>Library</small></button>
+    <button onclick="progress()">📈<small>Progress</small></button>
+  </div>`
+}
+function shell(title,body){app.innerHTML=`${nav()}<div class="card"><h2>${title}</h2>${body}</div>`}
+
+function home(){
+  clearTimers();
+  const b=state.baseline, latest=state.sessions[0], best=state.sessions.reduce((m,s)=>Math.max(m,s.wpm),0);
+  app.innerHTML=`${nav()}
+  <div class="card">
+    <h2>Your Baseline</h2>
+    ${b?`<div class="stats">
+      <div class="stat"><b>${b.wpm}</b><span>WPM</span></div>
+      <div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div>
+      <div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div>
+      <div class="stat"><b>${fmtDate(b.date)}</b><span>Saved baseline</span></div>
+    </div>`:`<div class="notice">You have not completed your baseline yet. Do this first so the course can adapt to your starting point.</div>
+      <button onclick="baselineIntro()">Start Baseline Test</button>`}
+  </div>
+  <div class="card"><h2>Today's Training</h2>
+    <p class="muted">A short, structured course. Speed is useful only when you still understand what you read.</p>
+    <button onclick="eyeTraining()">1. Eye Focus <small>· 3 min</small></button>
+    <button onclick="groupTraining()">2. Word Groups <small>· 3 min</small></button>
+    <button onclick="storyTraining()">3. Story Reading <small>· 5–7 min</small></button>
+  </div>
+  <div class="card"><h2>Your Progress</h2>
+    ${latest?`<div class="stats"><div class="stat"><b>${latest.wpm}</b><span>Latest WPM</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div><div class="stat"><b>${latest.comp}%</b><span>Latest comprehension</span></div><div class="stat"><b>${state.sessions.length}</b><span>Reading sessions</span></div></div>`:`<p class="muted">Your reading sessions will appear here after training.</p>`}
+  </div>`;
+}
+
+function baselineIntro(){
+  clearTimers();
+  shell("Baseline Assessment",`
+    <p>This is your starting measurement. Read an <b>unseen story</b> at your normal comfortable speed. Do not deliberately race.</p>
+    <div class="notice"><b>Important:</b> You will answer 5 questions afterward. Your score is saved automatically in this browser.</div>
+    <p><span class="pill">${words(BASELINE.text).length} words</span> &nbsp; No previous result is used.</p>
+    <button onclick="startBaseline()">Start Reading</button>
+    ${state.baseline?`<button class="secondary" onclick="showBaseline()">View Saved Baseline</button>`:""}
+  `)
+}
+function startBaseline(){
+  clearTimers();sessionStart=Date.now();
+  app.innerHTML=`${nav()}<div class="card">
+    <div class="row" style="justify-content:space-between"><span class="pill">Baseline</span><span id="readClock" class="pill">0:00</span></div>
+    <h2>${BASELINE.title}</h2>
+    <div class="reading">${BASELINE.text}</div>
+    <button onclick="finishBaseline()">I have finished reading</button>
+  </div>`;
+  timer=setInterval(()=>{document.getElementById("readClock").textContent=clock(Date.now()-sessionStart)},1000)
+}
+function clock(ms){let s=Math.floor(ms/1000),m=Math.floor(s/60);s%=60;return m+":"+String(s).padStart(2,"0")}
+function finishBaseline(){
+  clearTimers();const seconds=Math.max(1,(Date.now()-sessionStart)/1000);
+  renderQuiz(BASELINE,seconds,true);
+}
+function renderQuiz(story,seconds,isBaseline=false){
+  app.innerHTML=`${nav()}<div class="card"><h2>${isBaseline?"Baseline":"Comprehension"} Check</h2>
+    <p class="muted">Answer from memory. Choose one answer for each question.</p>
+    ${story.questions.map((x,i)=>`<div style="margin:18px 0"><b>${i+1}. ${esc(x.q)}</b>${x.a.map((a,j)=>`<button class="choice" data-q="${i}" data-a="${j}" onclick="pick(this)">${esc(a)}</button>`).join("")}</div>`).join("")}
+    <button onclick="submitQuiz(${seconds},${isBaseline})">Calculate Result</button>
+  </div>`;
+}
+function pick(el){
+  document.querySelectorAll(`button.choice[data-q="${el.dataset.q}"]`).forEach(x=>x.classList.remove("selected"));
+  el.classList.add("selected");
+}
+function submitQuiz(seconds,isBaseline){
+  const picked=BASELINE.questions.map((_,i)=>document.querySelector(`.choice[data-q="${i}"].selected`));
+  if(picked.some(x=>!x)){alert("Please answer all 5 questions.");return}
+  let score=picked.reduce((n,x,i)=>n+(Number(x.dataset.a)===BASELINE.questions[i].correct?1:0),0);
+  const comp=Math.round(score/5*100),wpm=calcWpm(words(BASELINE.text).length,seconds),eff=effective(wpm,comp);
+  if(isBaseline){state.baseline={wpm,comp,effective:eff,date:Date.now(),seconds};save()}
+  app.innerHTML=`${nav()}<div class="card">
+    <h2>${isBaseline?"Your Baseline Is Saved":"Result"}</h2>
+    <div class="stats"><div class="stat"><b>${wpm}</b><span>WPM</span></div><div class="stat"><b>${comp}%</b><span>Comprehension</span></div><div class="stat"><b>${eff}</b><span>Effective WPM</span></div><div class="stat"><b>${clock(seconds*1000)}</b><span>Reading time</span></div></div>
+    <div class="${comp>=70?"success":"notice"}" style="margin-top:14px">${comp>=70?"Good comprehension. We can now work on increasing speed gradually.":"Your comprehension was below 70%. We will keep speed conservative and focus on understanding first."}</div>
+    <button onclick="home()">Back to Home</button><button class="secondary" onclick="training()">Start Training</button>
+  </div>`;
+}
+function showBaseline(){
+  const b=state.baseline;
+  shell("Saved Baseline",`<div class="stats"><div class="stat"><b>${b.wpm}</b><span>WPM</span></div><div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div><div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div><div class="stat"><b>${fmtDate(b.date)}</b><span>Date</span></div></div>
+  <p class="muted">This result remains saved on this device until you reset your course data.</p><button onclick="home()">Home</button><button class="secondary" onclick="baselineIntro()">Retake Baseline</button>`)
+}
+
+/* ---------- Training ---------- */
+function training(){
+  clearTimers();
+  if(!state.baseline){baselineIntro();return}
+  shell("Training Plan",`
+    <p>Your baseline is <b>${state.baseline.wpm} WPM</b> with <b>${state.baseline.comp}% comprehension</b>.</p>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>1 · Eye Focus</h3><p class="muted">Train smooth left-centre-right eye movement.</p><button onclick="eyeTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>2 · Word Groups</h3><p class="muted">Learn to take in short phrases instead of one word at a time.</p><button onclick="groupTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>3 · Story Reading</h3><p class="muted">Apply the skill to real story material and test comprehension.</p><button onclick="storyTraining()">Start</button></div>
+  `)
+}
+
+/* Eye movement: actual guided targets, not a blinking dot. */
+function eyeTraining(){
+  clearTimers();let round=0,total=12;
+  app.innerHTML=`${nav()}<div class="card"><h2>Eye Focus</h2>
+    <p class="muted">Keep your head still. Follow the target with your eyes only. Blink normally. Stop if your eyes feel strained.</p>
+    <div class="eye-stage"><div id="target" class="target"></div></div>
+    <div class="stats"><div class="stat"><b id="eyeRound">0/${total}</b><span>Rounds</span></div><div class="stat"><b>3</b><span>Positions</span></div></div>
+    <div class="progressbar"><i id="eyeProgress"></i></div>
+    <p id="eyeInstruction" class="muted">Get ready…</p>
+    <button id="eyeStart" onclick="startEye()">Begin Exercise</button>
+  </div>`;
+}
+function startEye(){
+  const target=document.getElementById("target"), instr=document.getElementById("eyeInstruction"), total=12;
+  document.getElementById("eyeStart").disabled=true;let round=0;
+  const positions=[[12,50],[50,50],[88,50],[20,35],[80,65],[50,65],[80,35],[20,65],[50,35],[88,50],[50,50],[12,50]];
+  function next(){
+    if(round>=total){
+      clearInterval(eyeTimer);state.eyeSessions++;save();
+      instr.textContent="Completed. Your eye-movement session is saved.";
+      document.getElementById("eyeStart").disabled=false;
+      document.getElementById("eyeStart").textContent="Done";
+      return;
+    }
+    const [x,y]=positions[round];target.style.left=x+"%";target.style.top=y+"%";
+    round++;document.getElementById("eyeRound").textContent=round+"/"+total;
+    document.getElementById("eyeProgress").style.width=(round/total*100)+"%";
+    instr.textContent=round<=3?"Follow the target slowly.":round<=7?"Keep your head still and follow smoothly.":"Stay relaxed and follow the target.";
   }
-};
-
-var $ = function(id){ return document.getElementById(id); };
-var screens = ["home","intro","reading","quiz","result","training","exercise"];
-var currentStory = baselineStory;
-var startTime = 0;
-var elapsed = 0;
-var quizScore = 0;
-var animation = null;
-var paused = false;
-var trainWords = [];
-var trainIndex = 0;
-var trainSpeed = 150;
-
-function show(name){
-  screens.forEach(function(id){ $(id).classList.toggle("hidden",id !== name); });
-  window.scrollTo(0,0);
+  next();eyeTimer=setInterval(next,1100);
 }
 
-function readHistory(){
-  try { return JSON.parse(localStorage.getItem("speedReadingHistory") || "[]"); }
-  catch(e){ return []; }
+/* Word grouping: actual phrases from a story, paced by baseline. */
+function groupTraining(){
+  clearTimers();
+  const story=STORIES[0];
+  let size=2;if(state.sessions.length>=3)size=3;
+  if(state.sessions.length>=7)size=4;
+  const ws=words(story.text),groups=[];
+  for(let i=0;i<ws.length;i+=size)groups.push(ws.slice(i,i+size).join(" "));
+  let delay=Math.max(700,Math.round(60000/(state.baseline?state.baseline.wpm*1.05:180)*size));
+  app.innerHTML=`${nav()}<div class="card"><h2>Word Groups</h2>
+    <p class="muted">Read each phrase as one visual unit. The phrases are taken from <b>${story.title}</b>.</p>
+    <div class="notice">Round ${size}: ${size} words at a time. The pace is deliberately modest so comprehension stays ahead of speed.</div>
+    <div class="group-stage"><div id="groupWord" class="group-word">Ready?</div></div>
+    <div class="stats"><div class="stat"><b id="groupCount">0/${groups.length}</b><span>Groups</span></div><div class="stat"><b>${Math.round(60000/delay*size/60)}</b><span>Approx WPM</span></div></div>
+    <div class="progressbar"><i id="groupProgress"></i></div>
+    <button onclick="startGroups()">Start</button>
+  </div>`;
+  window._groups={groups,delay};
 }
-
-function saveHistory(wpm,comp,effective){
-  var h = readHistory();
-  h.push({date:new Date().toLocaleDateString(),wpm:wpm,comp:comp,effective:effective});
-  localStorage.setItem("speedReadingHistory",JSON.stringify(h.slice(-30)));
-}
-
-function updateHome(){
-  var h = readHistory();
-  if(h.length){
-    $("lastWpm").textContent = h[h.length-1].wpm + " WPM";
-    $("bestWpm").textContent = Math.max.apply(null,h.map(function(x){return x.wpm;})) + " WPM";
-    $("lastComp").textContent = h[h.length-1].comp + "%";
-    $("sessions").textContent = h.length;
+function startGroups(){
+  if(!window._groups)return;clearTimeout(groupTimer);
+  let i=0;const {groups,delay}=window._groups,el=document.getElementById("groupWord");
+  function show(){
+    if(i>=groups.length){
+      state.groupSessions++;save();el.textContent="Completed ✓";
+      document.getElementById("groupCount").textContent=groups.length+"/"+groups.length;
+      document.getElementById("groupProgress").style.width="100%";
+      return;
+    }
+    el.textContent=groups[i];i++;
+    document.getElementById("groupCount").textContent=i+"/"+groups.length;
+    document.getElementById("groupProgress").style.width=(i/groups.length*100)+"%";
+    groupTimer=setTimeout(show,delay);
   }
-  try{
-    var b = JSON.parse(localStorage.getItem("speedReadingBaseline") || "null");
-    if(b) $("baselineEffective").textContent = b.effective + " WPM";
-  }catch(e){}
+  show();
 }
 
-function beginBaseline(){
-  currentStory = baselineStory;
-  $("readingBadge").textContent = "BASELINE READING";
-  $("storyTitle").textContent = currentStory.title;
-  $("readingInstruction").textContent = "Read at your normal comfortable pace. Tap the button when you finish.";
-  $("storyText").textContent = currentStory.text;
-  show("reading");
-  startTime = performance.now();
+/* Story library and real opening workflow. */
+function library(){
+  clearTimers();
+  app.innerHTML=`${nav()}<div class="card"><h2>Story Library</h2>
+    <p class="muted">Read at your own pace. The app remembers where you stopped in each story.</p>
+    <select id="storySelect" onchange="updateStoryLibraryStatus()" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:10px">
+      ${STORIES.map(s=>`<option value="${s.id}">${esc(s.title)}</option>`).join("")}
+    </select>
+    <div id="storyPreview" class="notice" style="margin-top:12px"></div>
+    <div class="row" style="margin-top:10px">
+      <button onclick="openSelectedStory()">Open / Continue</button>
+      <button class="secondary" onclick="startSelectedTimed()">Timed Reading</button>
+    </div>
+  </div>`;
+  updateStoryLibraryStatus();
+}
+function selectedStory(){
+  const id=document.getElementById("storySelect")?.value||STORIES[0].id;
+  return STORIES.find(s=>s.id===id)||STORIES[0];
+}
+function updateStoryLibraryStatus(){
+  const box=document.getElementById("storyPreview"); if(!box)return;
+  const s=selectedStory(),ps=storyParagraphs(s.text);
+  const saved=getPosition(s.id);
+  const pos=Math.min(saved,Math.max(0,ps.length-1));
+  box.innerHTML=saved>0
+    ? `<b>Continue where you stopped:</b> Section ${pos+1} of ${ps.length}.<br><span class="muted">Tap Open / Continue to resume.</span>`
+    : `<b>Not started yet.</b><br><span class="muted">Tap Open / Continue to begin.</span>`;
+}
+function openSelectedStory(){
+  const s=selectedStory();
+  currentStory=s;
+  const ps=storyParagraphs(s.text);
+  const pos=Math.min(getPosition(s.id),Math.max(0,ps.length-1));
+  renderStoryReader(s,pos);
+}
+function renderStoryReader(s,pos){
+  const ps=storyParagraphs(s.text);
+  const safe=Math.min(Math.max(0,pos),Math.max(0,ps.length-1));
+  currentStory=s;
+  app.innerHTML=`${nav()}<div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <span class="pill">Story Library</span>
+      <span class="pill">Section ${safe+1} of ${ps.length}</span>
+    </div>
+    <h2>${esc(s.title)}</h2>
+    <p class="muted">${words(s.text).length} words · Your reading position is saved automatically.</p>
+    <div class="progressbar"><i style="width:${((safe+1)/ps.length*100)}%"></i></div>
+    <div class="story" style="margin-top:16px">
+      ${ps.map((p,i)=>`<p style="${i===safe?'':'display:none'}">${esc(p)}</p>`).join("")}
+    </div>
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+      <button class="secondary" onclick="moveStory(-1)" ${safe===0?'disabled':''}>← Previous</button>
+      <button onclick="${safe===ps.length-1?'finishStoryBook()':'moveStory(1)'}">${safe===ps.length-1?'Finish Story':'Next Section →'}</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="secondary" onclick="startTimedStory('${s.id}')">Timed Reading</button>
+      <button class="ghost" onclick="restartStory()">Start from Beginning</button>
+      <button class="ghost" onclick="library()">Back to Library</button>
+    </div>
+    <div class="success" style="margin-top:12px">Your position is saved as you move through the story.</div>
+  </div>`;
+}
+function moveStory(delta){
+  if(!currentStory)return;
+  const ps=storyParagraphs(currentStory.text);
+  const pos=Math.max(0,Math.min(getPosition(currentStory.id)+delta,ps.length-1));
+  savePosition(currentStory.id,pos);
+  renderStoryReader(currentStory,pos);
+}
+function restartStory(){
+  if(!currentStory)return;
+  clearPosition(currentStory.id);
+  renderStoryReader(currentStory,0);
+}
+function finishStoryBook(){
+  if(!currentStory)return;
+  clearPosition(currentStory.id);
+  renderStoryReader(currentStory,storyParagraphs(currentStory.text).length-1);
+}
+function startSelectedTimed(){startTimedStory(selectedStory().id)}
+
+function startTimedStory(id){
+  const s=STORIES.find(x=>x.id===id);if(!s)return;currentStory=s;sessionStart=Date.now();
+  app.innerHTML=`${nav()}<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Timed Reading</span><span id="storyClock" class="pill">0:00</span></div><h2>${esc(s.title)}</h2><div class="reading">${esc(s.text)}</div><button onclick="finishTimedStory()">Finish & Check Comprehension</button></div>`;
+  timer=setInterval(()=>{document.getElementById("storyClock").textContent=clock(Date.now()-sessionStart)},1000);
+}
+function finishTimedStory(){
+  clearTimers();const seconds=Math.max(1,(Date.now()-sessionStart)/1000);
+  const story=currentStory, wpm=calcWpm(words(story.text).length,seconds);
+  /* Generate comprehension questions from the story with a small fixed bank. */
+  const qs=story.id==="morning-train"?[
+    {q:"What did Maya normally use during the train journey?",a:["A phone or book","A telescope","A map","A camera"],correct:0},
+    {q:"Who sat opposite Maya?",a:["A child","An elderly man","A teacher","A sailor"],correct:1},
+    {q:"What was Maya trying to notice each day?",a:["Important news","New details","New people","Train times"],correct:1},
+    {q:"What did the man point towards?",a:["The river","The station","The trees","The city"],correct:2},
+    {q:"What did Maya write down?",a:["A timetable","A poem","The man's sentence","A list of passengers"],correct:2}
+  ]:[
+    {q:"Where did the lantern stand?",a:["On a boat","On the highest point of the island","Inside a cabin","At the harbour gate"],correct:1},
+    {q:"Why did Leo stay longer than expected?",a:["He lost his tools","The lantern broke","Strong winds kept him there","He wanted a holiday"],correct:2},
+    {q:"What did the fishermen observe?",a:["Only the weather forecast","Water colour, birds and wave sounds","The lighthouse clock","Ships from other countries"],correct:1},
+    {q:"What did Leo add to the lantern?",a:["A larger bulb","A metal cover","A new tower","A radio"],correct:1},
+    {q:"What lesson did Leo value most?",a:["How to repair glass","How to build a lantern","How experienced people read the sea","How to travel cheaply"],correct:2}
+  ];
+  renderStoryQuiz(story,qs,seconds,wpm);
+}
+function renderStoryQuiz(story,qs,seconds,wpm){
+  app.innerHTML=`${nav()}<div class="card"><h2>Comprehension Check</h2><p class="muted">Reading speed: <b>${wpm} WPM</b>. Now answer the five questions.</p>
+  ${qs.map((x,i)=>`<div style="margin:18px 0"><b>${i+1}. ${esc(x.q)}</b>${x.a.map((a,j)=>`<button class="choice" data-sq="${i}" data-sa="${j}" onclick="pickStory(this)">${esc(a)}</button>`).join("")}</div>`).join("")}
+  <button onclick="submitStoryQuiz(${seconds},${wpm})">Save Reading Result</button></div>`;
+  window._storyQuiz=qs;
+}
+function pickStory(el){document.querySelectorAll(`button.choice[data-sq="${el.dataset.sq}"]`).forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function submitStoryQuiz(seconds,wpm){
+  const qs=window._storyQuiz,p=qs.map((_,i)=>document.querySelector(`.choice[data-sq="${i}"].selected`));
+  if(p.some(x=>!x)){alert("Please answer all 5 questions.");return}
+  const score=p.reduce((n,x,i)=>n+(Number(x.dataset.sa)===qs[i].correct?1:0),0),comp=score*20,eff=effective(wpm,comp);
+  state.sessions.unshift({date:Date.now(),story:currentStory.title,wpm,comp,effective:eff,seconds});
+  save();
+  app.innerHTML=`${nav()}<div class="card"><h2>Reading Result Saved</h2><div class="stats"><div class="stat"><b>${wpm}</b><span>WPM</span></div><div class="stat"><b>${comp}%</b><span>Comprehension</span></div><div class="stat"><b>${eff}</b><span>Effective WPM</span></div><div class="stat"><b>${clock(seconds*1000)}</b><span>Reading time</span></div></div>
+  <p class="${comp>=70?"success":"notice"}">${comp>=70?"Good. Next time we can increase pace slightly.":"Slow down a little and focus on understanding before increasing speed."}</p><button onclick="home()">Home</button><button class="secondary" onclick="progress()">View Progress</button></div>`;
 }
 
-function renderQuiz(){
-  var html = "";
-  currentStory.questions.forEach(function(q,i){
-    html += '<div class="question"><b>'+ (i+1) + ". " + q[0] + "</b>";
-    ["a","b","c","d"].forEach(function(letter,j){
-      html += '<button type="button" class="choice" data-q="'+i+'" data-a="'+letter+'">'+q[j+1]+"</button>";
-    });
-    html += "</div>";
-  });
-  $("questions").innerHTML = html;
-  Array.prototype.forEach.call(document.querySelectorAll(".choice"),function(btn){
-    btn.addEventListener("click",function(){
-      var q = btn.getAttribute("data-q");
-      Array.prototype.forEach.call(document.querySelectorAll('.choice[data-q="'+q+'"]'),function(x){x.classList.remove("selected");});
-      btn.classList.add("selected");
-    });
-  });
-  show("quiz");
+/* ---------- Progress ---------- */
+function progress(){
+  clearTimers();const b=state.baseline,s=state.sessions;
+  const best=s.reduce((m,x)=>Math.max(m,x.wpm),0),bestEff=s.reduce((m,x)=>Math.max(m,x.effective),0);
+  shell("Progress",`
+    ${b?`<h3>Baseline</h3><div class="stats"><div class="stat"><b>${b.wpm}</b><span>WPM</span></div><div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div><div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div><div class="stat"><b>${fmtDate(b.date)}</b><span>Date</span></div></div>`:`<div class="notice">Complete the baseline first.</div>`}
+    <h3 style="margin-top:20px">Training Totals</h3><div class="stats"><div class="stat"><b>${s.length}</b><span>Story sessions</span></div><div class="stat"><b>${state.eyeSessions}</b><span>Eye sessions</span></div><div class="stat"><b>${state.groupSessions}</b><span>Group sessions</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div></div>
+    <h3 style="margin-top:20px">Reading History</h3>
+    ${s.length?`<table><tr><th>Date</th><th>Story</th><th>WPM</th><th>Comp.</th><th>Effective</th></tr>${s.slice(0,12).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.story)}</td><td>${x.wpm}</td><td>${x.comp}%</td><td>${x.effective}</td></tr>`).join("")}</table>`:`<p class="muted">No story sessions yet.</p>`}
+    ${s.length?`<p class="muted">Best effective speed: <b>${bestEff}</b> WPM. Aim for steady improvement, not maximum speed at any cost.</p>`:""}
+  `)
 }
-
-function finishReading(){
-  elapsed = Math.max(0.1,(performance.now()-startTime)/1000);
-  renderQuiz();
-}
-
-function checkQuiz(){
-  quizScore = 0;
-  currentStory.questions.forEach(function(q,i){
-    var selected = document.querySelector('.choice.selected[data-q="'+i+'"]');
-    if(selected && selected.getAttribute("data-a") === q[5]) quizScore++;
-  });
-  var words = currentStory.text.trim().split(/\s+/).length;
-  var wpm = Math.max(1,Math.round(words/(elapsed/60)));
-  var comp = Math.round(quizScore/currentStory.questions.length*100);
-  var effective = Math.round(wpm*comp/100);
-  var level = wpm < 140 ? "Beginner" : wpm < 180 ? "Foundation" : wpm < 220 ? "Intermediate" : "Advanced";
-
-  saveHistory(wpm,comp,effective);
-  localStorage.setItem("speedReadingBaseline",JSON.stringify({
-    wpm:wpm,comp:comp,effective:effective,level:level,date:new Date().toLocaleDateString()
-  }));
-
-  $("resultWpm").textContent = wpm + " WPM";
-  $("resultComp").textContent = comp + "%";
-  $("resultEffective").textContent = effective + " WPM";
-  $("resultLevel").textContent = level;
-  $("resultHeading").textContent = comp >= 80 ? "Excellent understanding" : "Good starting point";
-  $("resultMessage").textContent = "This is your baseline. Future training will aim to increase speed without allowing comprehension to fall.";
-  updateHome();
-  show("result");
-}
-
-function startTraining(){
-  var b = null;
-  try{b=JSON.parse(localStorage.getItem("speedReadingBaseline")||"null");}catch(e){}
-  trainSpeed = b ? Math.min(220,Math.max(120,b.wpm)) : 150;
-  $("trainingSpeed").textContent = trainSpeed;
-  trainWords = currentStory.text.split(/\s+/);
-  var groups=[];
-  for(var i=0;i<trainWords.length;i+=3) groups.push(trainWords.slice(i,i+3).join(" "));
-  trainWords = groups;
-  trainIndex=0; elapsed=0; paused=false;
-  $("pauseTraining").textContent="Pause";
-  $("trainingWord").textContent=trainWords[0] || "Ready?";
-  $("trainingProgress").style.width="0%";
-  show("training");
-  animation=requestAnimationFrame(trainingTick);
-}
-
-function trainingTick(now){
-  if(paused) return;
-  elapsed = now - startTime;
-  var interval = 60000/trainSpeed;
-  var wanted = Math.floor(elapsed/interval);
-  if(wanted > trainIndex){
-    trainIndex = wanted;
-    $("trainingWord").textContent = trainWords[trainIndex] || "";
-    $("trainingProgress").style.width = Math.min(100,trainIndex/Math.max(1,trainWords.length-1)*100) + "%";
-  }
-  if(trainIndex >= trainWords.length-1){ finishTraining(); return; }
-  animation=requestAnimationFrame(trainingTick);
-}
-
-function finishTraining(){
-  if(animation) cancelAnimationFrame(animation);
-  $("trainingProgress").style.width="100%";
-  $("trainingWord").textContent="Well done!";
-}
-
-function openExercise(type){
-  show("exercise");
-  if(type==="eye"){
-    $("exerciseBadge").textContent="EYE FOCUS";
-    $("exerciseTitle").textContent="Smooth eye movement";
-    $("exerciseDescription").textContent="Follow the dot with your eyes. Keep your head still and stay relaxed.";
-    $("exerciseVisual").textContent="•";
-  }else{
-    $("exerciseBadge").textContent="WORD GROUPING";
-    $("exerciseTitle").textContent="See phrases as units";
-    $("exerciseDescription").textContent="Try to recognise the whole phrase instead of processing every word separately.";
-    $("exerciseVisual").textContent="the morning train";
-  }
-}
-
-$("baselineButton").addEventListener("click",function(){show("intro");});
-$("beginButton").addEventListener("click",beginBaseline);
-$("finishReading").addEventListener("click",finishReading);
-$("checkQuiz").addEventListener("click",checkQuiz);
-$("trainingButton").addEventListener("click",startTraining);
-$("finishTraining").addEventListener("click",function(){finishTraining();});
-$("pauseTraining").addEventListener("click",function(){
-  paused=!paused;
-  $("pauseTraining").textContent=paused?"Resume":"Pause";
-  if(!paused){startTime=performance.now()-elapsed;animation=requestAnimationFrame(trainingTick);}
-});
-$("eyeButton").addEventListener("click",function(){openExercise("eye");});
-$("groupButton").addEventListener("click",function(){openExercise("group");});
-$("exerciseDone").addEventListener("click",function(){show("home");});
-$("exerciseStart").addEventListener("click",function(){
-  var values=["•"," ","•"," ","•"," ","•"," "],i=0;
-  if(window._eyeTimer) clearInterval(window._eyeTimer);
-  window._eyeTimer=setInterval(function(){
-    $("exerciseVisual").textContent=values[i++%values.length];
-  },450);
-  setTimeout(function(){clearInterval(window._eyeTimer);},6000);
-});
-$("storySelect").addEventListener("change",function(){currentStory=stories[this.value];});
-
-updateHome();
-})();
+home();
 </script>
 </body>
 </html>
