@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>Speed Reading Coach</title>
+<style>
+:root{--teal:#0f766e;--teal2:#ccfbf1;--ink:#18312f;--muted:#647775;--bg:#f4f8f7;--card:#fff;--line:#d9e5e2;--good:#166534;--warn:#92400e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:720px;margin:auto;padding:18px 15px 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px}.icon{width:44px;height:44px;border-radius:14px;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:22px}
+h1{font-size:21px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 7px}.small{font-size:13px;color:var(--muted);line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f6faf9;border-radius:15px;padding:13px}.stat b{display:block;font-size:22px;margin-top:3px}
+button,select{font:inherit;min-height:46px;border-radius:13px;border:1px solid var(--line);padding:10px 14px;background:#fff;color:var(--ink)}
+button{cursor:pointer;font-weight:650}.primary{background:var(--teal);color:#fff;border-color:var(--teal);width:100%}.secondary{background:#f1f8f6}
+.row{display:flex;gap:9px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}
+.hidden{display:none!important}.storyTitle{font-family:Georgia,serif;font-size:22px}.story{font-family:Georgia,serif;font-size:19px;line-height:1.75}
+.choice{width:100%;text-align:left;margin-top:8px}.choice.selected{border-color:var(--teal);background:var(--teal2)}
+.speed{text-align:center;font-size:38px;font-weight:800;margin:12px 0}.readerWord{font-family:Georgia,serif;text-align:center;font-size:34px;min-height:95px;display:grid;place-items:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:14px 0}
+.progress{height:8px;background:#e8efed;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:var(--teal);width:0;transition:width .1s}
+.badge{display:inline-block;background:var(--teal2);color:var(--teal);border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700}
+.good{color:var(--good);font-weight:700}.notice{background:#fff8eb;border:1px solid #f2dfb4;padding:12px;border-radius:13px;font-size:13px;line-height:1.5}
+@media(max-width:420px){.story{font-size:18px}.readerWord{font-size:30px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="icon">📖</div><div><h1>Speed Reading Coach</h1><div class="sub">Read faster. Understand more. One step at a time.</div></div></div>
+</header>
+
+<section id="home">
+  <div class="card">
+    <span class="badge">BEGINNER COURSE</span>
+    <h2 style="margin-top:10px">Learn speed reading through stories</h2>
+    <p class="small">We will first discover your natural reading speed, then train eye movement, word grouping and pacing while checking comprehension.</p>
+    <div class="grid" style="margin:14px 0">
+      <div class="stat"><span class="small">Last WPM</span><b id="lastWpm">—</b></div>
+      <div class="stat"><span class="small">Best WPM</span><b id="bestWpm">—</b></div>
+      <div class="stat"><span class="small">Comprehension</span><b id="lastComp">—</b></div>
+      <div class="stat"><span class="small">Sessions</span><b id="sessions">0</b></div>
+      <div class="stat" style="grid-column:1/-1"><span class="small">Baseline effective reading</span><b id="baselineEffective">Not tested</b></div>
+    </div>
+    <button class="primary" id="startBaseline">Start Baseline Reading</button>
+  </div>
+
+  <div class="card">
+    <h2>📚 Story Library</h2>
+    <p class="small">Version 1 begins with an original short adventure story, written specifically for training. More public-domain classics can be added later.</p>
+    <select id="storySelect" style="width:100%;margin-top:8px">
+      <option value="mountain">The Morning Train</option>
+      <option value="island">The Island Lantern</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>Today's lesson</h2>
+    <div class="row">
+      <button id="eyeBtn" class="secondary">👁 Eye Focus</button>
+      <button id="groupBtn" class="secondary">🔤 Word Groups</button>
+    </div>
+  </div>
+</section>
+
+<section id="baselineIntro" class="hidden">
+ <div class="card">
+  <span class="badge">FIRST-TIME ASSESSMENT</span>
+  <h2>Your reading baseline</h2>
+  <p class="small">This test is different from the normal training stories. You have not seen this passage before, so it gives us a cleaner starting measurement.</p>
+  <div class="notice"><b>Important:</b> Read naturally. Do not deliberately rush. Your goal is to understand the story while reading at your normal pace.</div>
+  <button class="primary" id="beginBaselineTest" style="margin-top:14px">Begin Baseline Test</button>
+ </div>
+</section>
+
+<section id="baseline" class="hidden">
+ <div class="card">
+   <span class="badge">BASELINE TEST</span>
+   <h2 class="storyTitle" id="baseTitle"></h2>
+   <p class="small">Read the story at your normal comfortable pace. Do not deliberately speed up. Tap <b>Finish Reading</b> when you reach the end.</p>
+   <div class="story" id="baseStory"></div>
+   <button class="primary" id="finishBase">Finish Reading</button>
+ </div>
+</section>
+
+<section id="comprehension" class="hidden">
+ <div class="card">
+  <span class="badge">COMPREHENSION</span>
+  <h2>How well did you understand the story?</h2>
+  <p class="small">Choose the best answer for each question.</p>
+  <div id="questions"></div>
+  <button class="primary" id="submitQuiz" style="margin-top:14px">Check Answers</button>
+ </div>
+</section>
+
+<section id="result" class="hidden">
+ <div class="card">
+   <span class="badge">YOUR RESULT</span>
+   <h2 id="resultTitle">Good start</h2>
+   <div class="grid" style="margin:14px 0">
+    <div class="stat"><span class="small">Reading speed</span><b id="resultWpm">—</b></div>
+    <div class="stat"><span class="small">Comprehension</span><b id="resultPct">—</b></div>
+    <div class="stat"><span class="small">Effective reading</span><b id="effectiveWpm">—</b></div>
+    <div class="stat"><span class="small">Starting level</span><b id="startingLevel">—</b></div>
+   </div>
+   <p id="resultText" class="small"></p>
+   <button class="primary" id="startTraining">Start My Training Programme</button>
+ </div>
+</section>
+
+<section id="training" class="hidden">
+ <div class="card">
+   <span class="badge" id="trainBadge">WORD GROUPING</span>
+   <h2 id="trainTitle">Train your eyes</h2>
+   <p class="small" id="trainInstruction"></p>
+   <div class="speed"><span id="trainSpeed">150</span> <span style="font-size:16px">WPM</span></div>
+   <div class="progress"><div id="trainProgress"></div></div>
+   <div class="readerWord" id="readerWord">Ready?</div>
+   <div class="row">
+     <button id="pauseBtn" class="secondary">Pause</button>
+     <button id="stopTrain" class="secondary">Finish</button>
+   </div>
+ </div>
+</section>
+
+<section id="history" class="hidden">
+ <div class="card">
+  <span class="badge">PROGRESS</span><h2>Your reading journey</h2>
+  <div id="historyList" class="small"></div>
+  <button class="secondary" id="backHome" style="width:100%;margin-top:14px">Back to Home</button>
+ </div>
+</section>
+
+<section id="exercise" class="hidden">
+ <div class="card">
+  <span class="badge" id="exerciseBadge">EYE FOCUS</span>
+  <h2 id="exerciseTitle"></h2>
+  <p id="exerciseText" class="small"></p>
+  <div class="readerWord" id="exerciseVisual">READY</div>
+  <button class="primary" id="exerciseStart">Start Exercise</button>
+  <button class="secondary" id="exerciseDone" style="width:100%;margin-top:9px">Done</button>
+ </div>
+</section>
+
+<script>
+(function(){
+const baselineStory={
+ title:"The Lighthouse Keeper",
+ text:"At the edge of the northern coast stood a small lighthouse that had guided ships for more than a hundred years. Every evening, before darkness settled over the sea, the keeper climbed the winding stairs and checked the great lamp. One winter night, thick clouds arrived without warning. The wind became stronger, and waves crashed against the rocks below. From the top window, the keeper noticed a fishing boat struggling to find the entrance to the harbour. He immediately checked the lamp and increased its brightness. The boat slowly changed direction and followed the beam towards the sheltered water. By midnight the storm had passed, and the fishermen reached the harbour safely. The next morning, the keeper found a small basket of fresh fish outside his door. There was no note, but he knew who had left it there.",
+ questions:[
+  ["What was the main purpose of the lighthouse?","To guide ships","To warn villagers","To store fishing equipment","To measure the weather","a"],
+  ["When did the keeper check the lamp?","At noon","Before darkness","After the storm","At sunrise","b"],
+  ["What did the keeper notice during the storm?","A broken boat","A fishing boat in difficulty","A fire on the beach","A group of sailors","b"],
+  ["What did he do to help the boat?","He went to sea","He sounded a bell","He increased the lamp's brightness","He closed the harbour","c"],
+  ["What did the fishermen leave the next morning?","A letter","A basket of fresh fish","A lantern","A new lamp","b"]
+ ]
+},
+const stories={
+ mountain:{
+  title:"The Morning Train",
+  text:"The train moved slowly through the mountains as the morning mist began to lift. Daniel sat beside the window, watching the dark trees appear and disappear between patches of silver cloud. He had travelled this route many times, but that morning something felt different. At the next station, the train stopped beside a small wooden platform. An old man was waiting there with a blue suitcase. He climbed aboard, looked around the nearly empty carriage, and smiled at Daniel. A few minutes later, the train began its climb again. The old man pointed towards the valley and told Daniel about a forgotten walking path that led to a quiet lake above the village. Daniel had never heard of it. By the time the train reached the next station, he had already decided that one day he would return and find the path.",
+  questions:[
+   ["Where was Daniel travelling?","Through the mountains","Across the desert","Along the coast","Across a city","a"],
+   ["What colour was the old man's suitcase?","Red","Green","Blue","Black","c"],
+   ["What did the old man tell Daniel about?","A restaurant","A forgotten walking path","A new train","A hotel","b"],
+   ["Where did the path lead?","A quiet lake","A busy town","A railway museum","A large airport","a"]
+  ]
+ },
+ island:{
+  title:"The Island Lantern",
+  text:"Every evening, Mara climbed the narrow hill behind the village to light a small lantern. The lantern stood beside an old stone wall and could be seen from the fishing boats far out at sea. Her grandfather had taught her the routine when she was a child. One stormy night, the wind became so strong that Mara almost turned back. Then she remembered how many fishermen depended on that small light. She continued up the hill, protected the flame with both hands, and carefully lit the lantern. Hours later, the storm passed. At dawn, a fishing boat returned safely to the harbour. Its captain thanked Mara and told her that the little light had helped them find their way home.",
+  questions:[
+   ["Why did Mara light the lantern?","For decoration","To guide fishing boats","To cook dinner","To mark a road","b"],
+   ["Who taught Mara the routine?","Her father","A fisherman","Her grandfather","The village chief","c"],
+   ["What happened during the storm?","The lantern broke","Mara almost turned back","The village moved","The boat left","b"],
+   ["What did the captain say the light had done?","Helped them find home","Made the storm stop","Found their boat","Lit the harbour","a"]
+  ]
+ }
+};
+let story=stories.mountain,baseStart=0,baseElapsed=0,quizCorrect=0,trainTimer=null,paused=false,trainWords=[],trainIndex=0,trainStart=0,trainElapsed=0,trainWpm=150;
+const $=id=>document.getElementById(id);
+function show(id){["home","baselineIntro","baseline","comprehension","result","training","history","exercise"].forEach(x=>$(x).classList.toggle("hidden",x!==id));window.scrollTo({top:0,behavior:"smooth"});}
+function load(){try{let b=JSON.parse(localStorage.getItem("speedCoachBaseline")||"null");if(b){$("baselineEffective").textContent=b.effective+" WPM";$("resultWpm").textContent=b.wpm+" WPM";$("resultPct").textContent=b.comp+"%";$("effectiveWpm").textContent=b.effective+" WPM";$("startingLevel").textContent=b.level}let h=JSON.parse(localStorage.getItem("speedCoachHistory")||"[]");if(h.length){$("lastWpm").textContent=h[h.length-1].wpm;$("bestWpm").textContent=Math.max(...h.map(x=>x.wpm));$("lastComp").textContent=h[h.length-1].comp+"%";$("sessions").textContent=h.length}}catch(e){}}
+function save(wpm,comp){let h=[];try{h=JSON.parse(localStorage.getItem("speedCoachHistory")||"[]")}catch(e){}h.push({date:new Date().toLocaleDateString(),wpm,comp});localStorage.setItem("speedCoachHistory",JSON.stringify(h.slice(-30)));load();}
+function renderBase(){if(story!==baselineStory)story=stories[$("storySelect").value];$("baseTitle").textContent=story.title;$("baseStory").textContent=story.text;show("baseline");baseStart=performance.now();}
+function renderQuiz(){let q=story.questions;$("questions").innerHTML=q.map((x,i)=>`<div style="margin-top:16px"><b>${i+1}. ${x[0]}</b>${x.slice(1,5).map((a,j)=>`<button class="choice" data-q="${i}" data-a="${"abcd"[j]}">${a}</button>`).join("")}</div>`).join("");$("questions").querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll('[data-q="'+b.dataset.q+'"]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected")}));show("comprehension");}
+$("startBaseline").addEventListener("click",()=>{show("baselineIntro")});
+$("beginBaselineTest").addEventListener("click",()=>{story=baselineStory;renderBase()});
+$("finishBase").addEventListener("click",()=>{baseElapsed=Math.max(1,(performance.now()-baseStart)/1000);renderQuiz()});
+$("submitQuiz").addEventListener("click",()=>{quizCorrect=0;story.questions.forEach((q,i)=>{let s=document.querySelector('.choice.selected[data-q="'+i+'"]');if(s&&s.dataset.a===q[5])quizCorrect++});let words=story.text.trim().split(/\\s+/).length;let wpm=Math.max(1,Math.round(words/(baseElapsed/60)));let pct=Math.round(quizCorrect/story.questions.length*100);save(wpm,pct);$("resultWpm").textContent=wpm+" WPM";$("resultPct").textContent=pct+"%";$("resultTitle").textContent=pct>=75?"Strong understanding":"Good first attempt";$("resultText").textContent=pct>=75?"Excellent. We can now begin increasing speed carefully while protecting comprehension.":"For now, we will prioritise understanding and gradually build speed.";show("result")});
+$("startTraining").addEventListener("click",()=>startTraining("group"));
+function startTraining(mode){show("training");trainWpm=Math.min(220,Math.max(120,Number($("resultWpm").textContent)||150));$("trainSpeed").textContent=trainWpm;if(mode==="group"){ $("trainBadge").textContent="WORD GROUPING";$("trainTitle").textContent="Train your eyes to read groups";$("trainInstruction").textContent="Read the phrase as one unit. Avoid saying each word separately.";trainWords=story.text.split(/\\s+/).reduce((a,w,i)=>{if(i%3===0)a.push([]);a[a.length-1].push(w);return a},[]).map(x=>x.join(" "));}else{trainBadge.textContent="PACE";trainTitle.textContent="Build reading rhythm";trainInstruction.textContent="Follow the pace without forcing yourself.";trainWords=story.text.split(/\\s+/)}trainIndex=0;trainElapsed=0;paused=false;$("pauseBtn").textContent="Pause";$("readerWord").textContent=trainWords[0];$("trainProgress").style.width="0%";trainStart=performance.now();trainTimer=requestAnimationFrame(trainTick);}
+function trainTick(now){if(paused)return;trainElapsed=now-trainStart;let interval=60000/trainWpm;if(Math.floor(trainElapsed/interval)>trainIndex){trainIndex++;$("readerWord").textContent=trainWords[trainIndex]||"";$("trainProgress").style.width=Math.min(100,trainIndex/trainWords.length*100)+"%"}if(trainIndex>=trainWords.length-1){finishTraining();return}trainTimer=requestAnimationFrame(trainTick);}
+function finishTraining(){if(trainTimer)cancelAnimationFrame(trainTimer);$("trainProgress").style.width="100%";$("readerWord").textContent="Well done!";setTimeout(()=>show("home"),500);}
+$("pauseBtn").addEventListener("click",()=>{paused=!paused;$("pauseBtn").textContent=paused?"Resume":"Pause";if(!paused){trainStart=performance.now()-trainElapsed;trainTimer=requestAnimationFrame(trainTick)}});
+$("stopTrain").addEventListener("click",finishTraining);
+$("eyeBtn").addEventListener("click",()=>exercise("eye"));
+$("groupBtn").addEventListener("click",()=>exercise("group"));
+function exercise(type){show("exercise");if(type==="eye"){$("exerciseBadge").textContent="EYE FOCUS";$("exerciseTitle").textContent="Smooth eye movement";$("exerciseText").textContent="Keep your eyes relaxed and follow the changing target. The goal is controlled movement, not speed.");$("exerciseVisual").textContent="•";}else{$("exerciseBadge").textContent="WORD GROUPING";$("exerciseTitle").textContent="See phrases, not single words";$("exerciseText").textContent="Try to recognise the whole phrase at once. This reduces unnecessary eye movements.");$("exerciseVisual").textContent="the morning train";}}
+$("exerciseStart").addEventListener("click",()=>{let phrases=["•","—","•","—","•","—","•","—"];let i=0;let t=setInterval(()=>{$("exerciseVisual").textContent=phrases[i++%phrases.length];},450);setTimeout(()=>clearInterval(t),6000)});
+$("exerciseDone").addEventListener("click",()=>show("home"));
+$("storySelect").addEventListener("change",()=>{story=stories[$("storySelect").value]});
+load();
+})();
+</script>
+</div>
+</body>
+</html>
