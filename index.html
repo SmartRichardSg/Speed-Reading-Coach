@@ -26,6 +26,8 @@ input[type=range]{width:100%}input[type=text]{width:100%;padding:12px;border:1px
 .notice{background:#fff7e8;border:1px solid #f1d39a;color:#795b20;border-radius:12px;padding:11px;font-size:14px}.success{background:#edf9f1;border:1px solid #bfe3c8;color:#21633a;border-radius:12px;padding:11px}.error{background:#fff1f0;border:1px solid #efc2be;color:var(--danger);border-radius:12px;padding:11px}
 table{width:100%;border-collapse:collapse;font-size:13px}.footer{max-width:760px;margin:10px auto 30px;padding:18px 16px;color:var(--muted);font-size:12px;line-height:1.55;text-align:center}.footer b{color:var(--teal2)}th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 4px}
 @media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}.nav{grid-template-columns:repeat(4,1fr)}}
+
+.training-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.train-card{min-height:118px;text-align:left!important;display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;background:#f4fbfa!important;border:1px solid var(--line)!important;border-radius:14px!important;padding:14px!important}.train-card span{font-size:25px}.train-card b{font-size:16px}.train-card small{color:var(--muted);font-size:12px}.hero{border:2px solid #c7e8e3}.hero .primary{font-size:17px;padding:14px 18px}.big{font-size:38px;font-weight:800;text-align:center}@media(max-width:430px){.training-grid{grid-template-columns:1fr 1fr}.train-card{min-height:108px}}
 </style>
 </head>
 <body>
@@ -223,27 +225,36 @@ function shell(title,body){app.innerHTML=`${nav()}<div class="card"><h2>${title}
 
 function home(){
   clearTimers();
-  const b=state.baseline, latest=state.sessions[0], best=state.sessions.reduce((m,s)=>Math.max(m,s.wpm),0);
+  const b=state.baseline, latest=state.sessions[0], best=state.sessions.reduce((m,s)=>Math.max(m,s.wpm),0), z=optimalZone();
   app.innerHTML=`${nav()}
-  <div class="card">
-    <h2>Your Baseline</h2>
-    ${b?`<div class="stats">
-      <div class="stat"><b>${b.wpm}</b><span>WPM</span></div>
-      <div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div>
-      <div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div>
-      <div class="stat"><b>${fmtDate(b.date)}</b><span>Saved baseline</span></div>
-    </div>`:`<div class="notice">You have not completed your baseline yet. Do this first so the course can adapt to your starting point.</div>
-      <button onclick="baselineIntro()">Start Baseline Test</button>`}
+  <div class="hero card">
+    <span class="pill">SPEED READING COACH</span>
+    <h1 style="font-size:30px;margin:12px 0 8px">Become a better reader.</h1>
+    <p style="font-size:17px;line-height:1.6">Train your eyes and brain to take in meaningful groups of words, read smoothly, and remember the ideas — without sacrificing enjoyment.</p>
+    <button class="primary" onclick="training()">🚀 Start Reading Training</button>
   </div>
-  <div class="card"><h2>📖 Today's Practice</h2><div class="stats"><div class="stat"><b>${adaptiveTarget()}</b><span>Suggested WPM</span></div><div class="stat"><b>${loadDailyProgress().streak}</b><span>Day streak</span></div></div><p class="muted">Your target adjusts according to speed and comprehension.</p><button onclick="dailyTraining()">Start Today's 15-Minute Session</button></div>
-  <div class="card"><h2>Today's Training</h2>
-    <p class="muted">A short, structured course. Speed is useful only when you still understand what you read.</p>
-    <button onclick="eyeTraining()">1. Eye Focus <small>· 3 min</small></button>
-    <button onclick="groupTraining()">2. Word Groups <small>· 3 min</small></button>
-    <button onclick="storyTraining()">3. Story Reading <small>· 5–7 min</small></button>
+  <div class="card"><h2>🎯 Your Goal</h2>
+    <div class="stats">
+      <div class="stat"><b>${b?b.wpm:'—'}</b><span>Starting WPM</span></div>
+      <div class="stat"><b>${b?b.comp+'%':'—'}</b><span>Starting comprehension</span></div>
+      <div class="stat"><b>${z?z.min+'–'+z.max:'—'}</b><span>Comfort zone WPM</span></div>
+      <div class="stat"><b>${state.sessions.length}</b><span>Reading sessions</span></div>
+    </div>
+    <p class="muted" style="margin-top:12px">We are not trying to make you the fastest reader. We are looking for the speed where <b>enjoyment + comprehension + retention</b> are strongest.</p>
   </div>
-  <div class="card"><h2>Your Progress</h2>
-    ${latest?`<div class="stats"><div class="stat"><b>${latest.wpm}</b><span>Latest WPM</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div><div class="stat"><b>${latest.comp}%</b><span>Latest comprehension</span></div><div class="stat"><b>${state.sessions.length}</b><span>Reading sessions</span></div></div>`:`<p class="muted">Your reading sessions will appear here after training.</p>`}
+  <div class="card"><h2>🧠 Your Training Course</h2>
+    <div class="training-grid">
+      <button class="train-card" onclick="groupTraining()"><span>👥</span><b>Word Groups</b><small>2 → 3 → 4 words</small></button>
+      <button class="train-card" onclick="eyeTraining()"><span>👁️</span><b>Eye Span</b><small>Wider, smoother fixations</small></button>
+      <button class="train-card" onclick="paceTraining()"><span>⏱️</span><b>Pace Training</b><small>Stretch speed safely</small></button>
+      <button class="train-card" onclick="retentionTraining()"><span>🧠</span><b>Gist & Retention</b><small>Remember the important ideas</small></button>
+      <button class="train-card" onclick="storyTraining()"><span>📖</span><b>Real Story Practice</b><small>Apply the techniques naturally</small></button>
+      <button class="train-card" onclick="dailyTraining()"><span>📅</span><b>Today's Session</b><small>Short guided practice</small></button>
+    </div>
+  </div>
+  <div class="card"><h2>📊 Your Reading Journey</h2>
+    ${latest?`<div class="stats"><div class="stat"><b>${latest.wpm}</b><span>Latest WPM</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div><div class="stat"><b>${latest.comp}%</b><span>Latest comprehension</span></div><div class="stat"><b>${latest.effective}</b><span>Latest effective WPM</span></div></div>`:`<p class="muted">Complete your baseline, then your training journey begins.</p>`}
+    ${!b?`<button onclick="baselineIntro()">🎯 Take My Baseline First</button>`:''}
   </div>`;
 }
 
