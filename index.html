@@ -24,7 +24,7 @@ input[type=range]{width:100%}input[type=text]{width:100%;padding:12px;border:1px
 .eye-stage{height:210px;border:1px solid var(--line);border-radius:16px;background:#fbfefd;position:relative;overflow:hidden;margin:14px 0}.target{width:26px;height:26px;border-radius:50%;background:var(--teal);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 9px var(--soft);transition:left .35s,top .35s}
 .group-stage{min-height:150px;display:flex;align-items:center;justify-content:center;background:#f7fcfb;border:1px solid var(--line);border-radius:16px;margin:14px 0;text-align:center;padding:20px}.group-word{font-size:30px;font-weight:800;color:var(--teal2)}
 .notice{background:#fff7e8;border:1px solid #f1d39a;color:#795b20;border-radius:12px;padding:11px;font-size:14px}.success{background:#edf9f1;border:1px solid #bfe3c8;color:#21633a;border-radius:12px;padding:11px}.error{background:#fff1f0;border:1px solid #efc2be;color:var(--danger);border-radius:12px;padding:11px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 4px}
+table{width:100%;border-collapse:collapse;font-size:13px}.footer{max-width:760px;margin:10px auto 30px;padding:18px 16px;color:var(--muted);font-size:12px;line-height:1.55;text-align:center}.footer b{color:var(--teal2)}th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 4px}
 @media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}.nav{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
@@ -34,6 +34,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;b
 <p>Build speed while protecting comprehension.</p>
 </header>
 <main id="app"></main>
+<footer class="footer"><b>Why we created this app</b><br>This app is designed to help you become a better reader—not simply a faster one. Reading speed is valuable only when balanced with comprehension, retention, concentration and enjoyment. The goal is gradual, sustainable improvement. There is no required speed and no race against anyone else. Find the pace that works best for you, then gradually expand your ability over time.</footer>
 
 <script>
 "use strict";
@@ -305,13 +306,66 @@ function showBaseline(){
 function training(){
   clearTimers();
   if(!state.baseline){baselineIntro();return}
+  const t=trainingTarget(), zone=optimalZone();
   shell("Training Plan",`
     <p>Your baseline is <b>${state.baseline.wpm} WPM</b> with <b>${state.baseline.comp}% comprehension</b>.</p>
-    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>1 · Eye Focus</h3><p class="muted">Train smooth left-centre-right eye movement.</p><button onclick="eyeTraining()">Start</button></div>
-    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>2 · Word Groups</h3><p class="muted">Learn to take in short phrases instead of one word at a time.</p><button onclick="groupTraining()">Start</button></div>
-    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>3 · Story Reading</h3><p class="muted">Apply the skill to real story material and test comprehension.</p><button onclick="storyTraining()">Start</button></div>
+    <div class="notice"><b>Today's approach:</b> improve your reading ability without chasing speed. Suggested training pace: <b>${t} WPM</b>${zone?` · Current comfortable zone: <b>${zone.min}–${zone.max} WPM</b>`:""}.</div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>1 · Eye Focus</h3><p class="muted">Train smooth eye movement and wider visual attention.</p><button onclick="eyeTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>2 · Word Groups</h3><p class="muted">Progress from 2-word to 3-word and 4-word meaningful phrases.</p><button onclick="groupTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>3 · Pace Training</h3><p class="muted">Read a fresh passage at a controlled pace, then check understanding.</p><button onclick="paceTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>4 · Gist & Retention</h3><p class="muted">Practise remembering the main idea instead of every word.</p><button onclick="retentionTraining()">Start</button></div>
+    <div class="card" style="margin:10px 0;background:#fbfefd"><h3>5 · Real Story Practice</h3><p class="muted">Apply everything to enjoyable story reading.</p><button onclick="storyTraining()">Start</button></div>
   `)
 }
+
+function trainingTarget(){
+  const z=optimalZone(); if(z) return Math.max(z.max+5, Math.round((state.baseline?.wpm||160)*1.05));
+  return Math.round((state.baseline?.wpm||160)*1.05);
+}
+function optimalZone(){
+  const r=JSON.parse(localStorage.getItem('speedReadingOptimalV1')||'[]');
+  if(!r.length)return null;
+  const good=r.filter(x=>x.comp>=80 && x.retention>=70 && x.enjoy>=6);
+  const a=good.length?good:r; const ws=a.map(x=>x.wpm);
+  return {min:Math.max(1,Math.round(Math.min(...ws)-5)),max:Math.round(Math.max(...ws)+5)};
+}
+function saveOptimalResult(x){
+  const r=JSON.parse(localStorage.getItem('speedReadingOptimalV1')||'[]'); r.unshift(x); localStorage.setItem('speedReadingOptimalV1',JSON.stringify(r.slice(0,60)));
+}
+function paceTraining(){
+  clearTimers();
+  const passages=[
+    {title:'The Quiet Workshop',text:'At the back of the old building, a small workshop remained open long after the shops had closed. Mei visited because she wanted to repair a wooden clock. The craftsman did not hurry. He examined each wheel, cleaned the dust from the mechanism, and explained that careful work was often faster than repeated mistakes. By the time the clock began ticking again, Mei understood that patience was not the opposite of speed. It was one of the things that made useful speed possible.'},
+    {title:'A Walk Before Rain',text:'Dark clouds gathered above the town as Arun left the library. He could have taken the bus, but the air was cool and he wanted a short walk. Along the river he noticed cyclists turning home, shopkeepers bringing signs indoors, and birds disappearing into the trees. The first drops arrived near the bridge. Arun stopped beneath a shelter and realised that the walk had given him more than exercise. It had cleared his mind after a busy afternoon.'}
+  ];
+  const passage=passages[Math.floor(Date.now()/86400000)%passages.length], target=trainingTarget();
+  app.innerHTML=`${nav()}<div class="card"><span class="pill">Controlled Pace</span><h2>${passage.title}</h2><p class="muted">Target: <b>${target} WPM</b>. Read naturally. Do not race. Focus on taking in meaning in groups.</p><div class="reading">${esc(passage.text)}</div><button onclick="startPaceTimer(${words(passage.text).length},${target})">Start Timed Reading</button><button class="secondary" onclick="training()">Back</button></div>`;
+  window._pace={passage,target};
+}
+function startPaceTimer(count,target){
+  const start=Date.now(); let sec=0; app.innerHTML=`${nav()}<div class="card"><span class="pill">Reading</span><h2>${esc(window._pace.passage.title)}</h2><p class="muted">Target ${target} WPM · Read for meaning.</p><div class="reading">${esc(window._pace.passage.text)}</div><div class="timer" id="paceClock">0:00</div><button onclick="finishPace(${count},${start},${target})">Finish Reading</button></div>`;
+  timer=setInterval(()=>{sec++;const e=document.getElementById('paceClock');if(e)e.textContent=clock(sec*1000)},1000);
+}
+function finishPace(count,start,target){
+  clearTimers(); const sec=Math.max(1,(Date.now()-start)/1000),wpm=calcWpm(count,sec);
+  const qs=[['What was Mei trying to repair?',['A bicycle','A wooden clock','A radio','A lamp'],1],['What lesson did the craftsman demonstrate?',['Hurrying prevents mistakes','Patience can support useful speed','Tools are unnecessary','Old clocks are easy to fix'],1]];
+  app.innerHTML=`${nav()}<div class="card"><h2>Understanding Check</h2><p class="muted">You read at <b>${wpm} WPM</b>. Answer from memory.</p>${qs.map((q,i)=>`<div style="margin:18px 0"><b>${i+1}. ${q[0]}</b>${q[1].map((a,j)=>`<button class="choice" data-pq="${i}" data-pa="${j}" onclick="pickPace(this)">${a}</button>`).join('')}</div>`).join('')}<h3>How did that pace feel?</h3><input id="enjoy" type="range" min="1" max="10" value="7"><p class="muted">1 = uncomfortable · 10 = very enjoyable</p><button onclick="savePaceResult(${wpm},${sec},${target})">Save Session</button></div>`; window._paceQuiz=qs;
+}
+function pickPace(el){document.querySelectorAll(`button.choice[data-pq="${el.dataset.pq}"]`).forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}
+function savePaceResult(wpm,sec,target){
+  const qs=window._paceQuiz,p=qs.map((_,i)=>document.querySelector(`.choice[data-pq="${i}"].selected`)); if(p.some(x=>!x)){alert('Please answer both questions.');return}
+  const score=p.reduce((n,x,i)=>n+(Number(x.dataset.pa)===qs[i][2]?1:0),0),comp=score*50,enjoy=Number(document.getElementById('enjoy').value);
+  app.innerHTML=`${nav()}<div class="card"><h2>Session Saved</h2><div class="stats"><div class="stat"><b>${wpm}</b><span>WPM</span></div><div class="stat"><b>${comp}%</b><span>Comprehension</span></div><div class="stat"><b>${enjoy}/10</b><span>Enjoyment</span></div><div class="stat"><b>${Math.round(wpm*comp/100)}</b><span>Effective WPM</span></div></div><p class="${comp>=80?'success':'notice'}">${comp>=80?'Good understanding. We can gradually stretch your pace.':'Keep this pace or slow down slightly until understanding feels secure.'}</p><button onclick="training()">Continue Training</button></div>`;
+  saveOptimalResult({date:Date.now(),wpm,comp,retention:comp,enjoy,target});
+  state.sessions.unshift({date:Date.now(),story:'Controlled Pace — '+window._pace.passage.title,wpm,comp,effective:Math.round(wpm*comp/100),seconds:sec});save();
+}
+function retentionTraining(){
+  clearTimers(); const text=`The community library used to close at six o'clock, but volunteers began keeping it open for another hour on Thursdays. At first only a few people stayed late. Then students discovered the quiet reading room, parents found time to browse after work, and older residents began meeting there to exchange recommendations. After three months, the library decided to make the longer opening hours permanent. The change succeeded not because the building became larger, but because the community found a better way to use the space it already had.`;
+  app.innerHTML=`${nav()}<div class="card"><span class="pill">Gist & Retention</span><h2>Read for the main idea</h2><p class="muted">Read once. Do not try to memorise every detail. Then close your eyes for a moment and recall the main point.</p><div class="reading">${esc(text)}</div><button onclick="showRetentionPrompt()">I Have Finished Reading</button></div>`; window._retText=text;
+}
+function showRetentionPrompt(){app.innerHTML=`${nav()}<div class="card"><h2>What do you remember?</h2><p class="muted">Without looking back, write the gist in one or two sentences.</p><input id="gist" type="text" placeholder="The main point was…"><h3 style="margin-top:18px">How much do you think you remembered?</h3><input id="ret" type="range" min="1" max="10" value="7"><p class="muted">1 = very little · 10 = almost everything important</p><button onclick="saveRetention()">Save Practice</button></div>`}
+function saveRetention(){const gist=(document.getElementById('gist').value||'').trim();if(gist.length<8){alert('Please write at least a short sentence about the main idea.');return}const retention=Number(document.getElementById('ret').value)*10;const r=JSON.parse(localStorage.getItem('speedReadingRetentionV1')||'[]');r.unshift({date:Date.now(),retention,gist});localStorage.setItem('speedReadingRetentionV1',JSON.stringify(r.slice(0,60)));app.innerHTML=`${nav()}<div class="card"><h2>Retention Practice Saved ✓</h2><div class="big">${retention}%</div><p class="muted" style="text-align:center">Your self-rated recall for the main idea.</p><p><b>Your gist:</b> ${esc(gist)}</p><button onclick="training()">Continue Training</button></div>`}
+
 
 /* Eye movement: actual guided targets, not a blinking dot. */
 function eyeTraining(){
@@ -530,6 +584,7 @@ function progress(){
     ${b?`<h3>Baseline</h3><div class="stats"><div class="stat"><b>${b.wpm}</b><span>WPM</span></div><div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div><div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div><div class="stat"><b>${fmtDate(b.date)}</b><span>Date</span></div></div>`:`<div class="notice">Complete the baseline first.</div>`}
     <h3 style="margin-top:20px">Book Course</h3>${(()=>{const p=loadDailyProgress(),last=p.results[0];return `<div class="stats"><div class="stat"><b>${p.completed.length}/${DAILY_BOOK.chapters.length}</b><span>Chapters</span></div><div class="stat"><b>${p.streak}</b><span>Day streak</span></div><div class="stat"><b>${last?last.wpm:"—"}</b><span>Last book WPM</span></div><div class="stat"><b>${last?last.comp+"%":"—"}</b><span>Last comprehension</span></div></div>`})()}
     <h3 style="margin-top:20px">Training Totals</h3><div class="stats"><div class="stat"><b>${s.length}</b><span>Story sessions</span></div><div class="stat"><b>${state.eyeSessions}</b><span>Eye sessions</span></div><div class="stat"><b>${state.groupSessions}</b><span>Group sessions</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div></div>
+    ${(()=>{const z=optimalZone(),r=JSON.parse(localStorage.getItem('speedReadingOptimalV1')||'[]'),rr=JSON.parse(localStorage.getItem('speedReadingRetentionV1')||'[]');return `<h3 style="margin-top:20px">Your Reading Zone</h3>${z?`<div class="success"><b>Current comfortable zone: ${z.min}–${z.max} WPM</b><br>Based on your recent pace, comprehension and enjoyment results. This zone will change as you improve.</div>`:`<p class="muted">Complete a few controlled-pace sessions to discover your personal optimal reading zone.</p>`}<div class="stats" style="margin-top:10px"><div class="stat"><b>${r.length}</b><span>Pace sessions</span></div><div class="stat"><b>${rr.length}</b><span>Retention practices</span></div><div class="stat"><b>${r.length?Math.round(r.reduce((a,x)=>a+x.enjoy,0)/r.length*10)/10:'—'}</b><span>Avg enjoyment /10</span></div><div class="stat"><b>${rr.length?Math.round(rr.reduce((a,x)=>a+x.retention,0)/rr.length):'—'}</b><span>Avg self-rated retention %</span></div></div>`})()}
     <h3 style="margin-top:20px">Reading History</h3>
     ${s.length?`<table><tr><th>Date</th><th>Story</th><th>WPM</th><th>Comp.</th><th>Effective</th></tr>${s.slice(0,12).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.story)}</td><td>${x.wpm}</td><td>${x.comp}%</td><td>${x.effective}</td></tr>`).join("")}</table>`:`<p class="muted">No story sessions yet.</p>`}
     ${s.length?`<p class="muted">Best effective speed: <b>${bestEff}</b> WPM. Aim for steady improvement, not maximum speed at any cost.</p>`:""}
