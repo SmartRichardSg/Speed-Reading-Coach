@@ -81,9 +81,99 @@ When the wind finally became calm, Leo repaired the lantern. Before leaving, he 
 Years later, the fishermen still used the lantern. Leo's repair had been useful, but he remembered that the most valuable lesson on the island had come from watching people who knew their sea extremely well.`}
 ];
 
+const DAILY_BOOK={id:"last-train-north-harbour",title:"The Last Train to North Harbour",author:"Original story for Speed Reading Coach",level:2,description:"An eight-chapter mystery adventure designed for daily reading practice.",chapters:[
+{title:"Chapter 1 — The Unusual Ticket",text:`On a cool Monday morning, Daniel arrived at the railway station ten minutes earlier than usual. He planned to catch the 8:15 train to North Harbour, spend the afternoon with his old friend Marcus, and return before dinner. As he waited, he noticed a small envelope beneath the bench. His name was written on it.
+
+Inside was a railway ticket dated for that day. The time printed on it was 11:47 p.m. On the back someone had written three words: Bring the blue key.
+
+Daniel had no idea what the message meant. He did not own a blue key. When the 8:15 train arrived, he put the envelope into his pocket and boarded.
+
+At noon Marcus met him outside the harbour station. Daniel showed him the envelope. Marcus became unusually quiet. Years earlier, the two boys had found a small blue-painted key inside an abandoned signal box. They had hidden it and forgotten about it.
+
+Where is it now? Marcus asked. Daniel suddenly remembered.`},
+{title:"Chapter 2 — The Signal Box",text:`After lunch, Daniel and Marcus walked along the old railway line. Grass grew between the sleepers, and the abandoned signal box stood behind a row of trees.
+
+Inside, Daniel remembered where they had once hidden the blue key. They lifted the loose floorboard, but there was no key. Instead they found a folded sheet of paper showing the harbour and three circles along the shoreline. Beneath the drawing were the words: The last train does not carry passengers.
+
+Before they could discuss it, footsteps approached. A man in a dark coat entered carrying a small metal case. He searched beneath the same floorboard. Finding nothing, he became angry and left.
+
+Daniel and Marcus waited until he was gone.
+
+Whoever he was, Daniel thought, he was looking for the same thing they were.`},
+{title:"Chapter 3 — The Harbour Map",text:`The friends studied the drawing beside the harbour. The three circles formed a line from the old railway bridge to a small lighthouse on the eastern shore.
+
+The lighthouse keeper, Mrs Lee, explained that an old supply train had once carried equipment to the harbour. She pointed to the strange arrow on the map. It was not a railway symbol. It was a tide mark.
+
+At low tide, she explained, a narrow path appeared between the rocks and led to a stone platform normally hidden by water.
+
+Daniel checked the ticket. The time printed on it was close to the next low tide.
+
+The last train does not carry passengers, Marcus said. Maybe the time is the clue.
+
+Mrs Lee gave Daniel a small lantern and warned them that the rocks were dangerous at night.`},
+{title:"Chapter 4 — The Hidden Platform",text:`At 11:30 that night, Daniel and Marcus returned to the eastern shore. The sea was moving away from the rocks, revealing a narrow path.
+
+They followed the path to the stone platform. Daniel noticed a metal ring in the wall and pulled it. A section of stone moved aside, revealing a small storage space.
+
+Inside were old railway tools, a brass signal lamp, and a wooden box with a blue-painted lock.
+
+Suddenly a light appeared on the cliff. The man from the signal box called out, telling them to leave the box alone.
+
+He claimed that the box belonged to the harbour museum. But Daniel no longer trusted him. The tide was returning, and the friends hurried back towards the lighthouse with the lantern lighting their way.`},
+{title:"Chapter 5 — The Museum Record",text:`Mrs Lee helped Daniel and Marcus contact Mr Tan, the director of the harbour museum. When he saw the wooden box, he immediately recognised its importance.
+
+The harbour had once been a transfer point for scientific equipment. During the final years of the old railway, several boxes disappeared from the records.
+
+Mr Tan explained that the missing collection might contain valuable navigation instruments. More importantly, the objects could tell an important story about the harbour.
+
+The next morning a museum security officer accompanied them to the signal box. The stranger had gone, but they found a fresh footprint near the loose floorboard.
+
+Inside the floor was another message: The key was never lost. It was moved.
+
+Daniel remembered the blue key at last.`},
+{title:"Chapter 6 — The Blue Key",text:`Daniel and Marcus drove to Daniel's parents' house. In the attic they found an old tin box containing childhood objects. The blue key was still there.
+
+The key opened the wooden box. Inside were navigation instruments wrapped carefully in cloth and a notebook belonging to a harbour surveyor named Samuel Reed.
+
+The notebook described a winter storm and the decision to hide the instruments until the harbour could build a secure archive. Its final sentence said: Knowledge is safest when it is remembered.
+
+Mr Tan explained that the instruments were historically important, but their greatest value was the story attached to them.
+
+The museum planned to display the box, notebook, map, and blue key together. The stranger was identified from a harbour camera and the police began looking for him.
+
+The mystery had finally begun to make sense.`},
+{title:"Chapter 7 — The Last Train",text:`A week later the harbour museum held a small exhibition. Daniel and Marcus explained how they had found the collection.
+
+The original railway ticket was displayed beside the map. Daniel explained that the last train had not been a train at all. The time on the ticket was a clue to the tide and the hidden platform.
+
+An elderly visitor remembered that her father had worked on the railway. She pointed to a photograph showing a small railway wagon beside the lighthouse.
+
+The museum discovered that the wagon had transported supplies along the shoreline during low tide.
+
+The mystery was not really about treasure. It was about forgotten connections between the railway, harbour, and people who worked there.
+
+Daniel realised that interesting discoveries did not always happen in distant places. Sometimes history waited beside a familiar road or an old wooden door.`},
+{title:"Chapter 8 — A New Journey",text:`Months later Daniel still visited North Harbour. He volunteered at the museum and helped catalogue photographs, maps, and letters that had been stored for years.
+
+One morning Mr Tan handed him another envelope. Inside was a photograph of an old coastal road. On the back was a note: There is another story waiting.
+
+Daniel looked at Marcus. Neither spoke for several seconds. Then Marcus picked up his jacket.
+
+Saturday? he asked.
+
+Daniel smiled. Saturday.
+
+Outside, the harbour was bright under the morning sun. Boats moved slowly across the water, and the railway station filled with passengers.
+
+Daniel thought about the first envelope, the hidden platform, the blue key, and the old surveyor's notebook. The most valuable discovery had not been the instruments. It had been the habit of looking carefully.
+
+From that day forward, Daniel decided that every journey, however ordinary, deserved his full attention.`}
+]};
+
 /* ---------- Storage ---------- */
 const KEY="speedReadingCoachV2";
 const POSKEY="speedReadingStoryPositionsV1";
+const DAILYKEY="speedReadingDailyV2";
 function load(){
   try{return JSON.parse(localStorage.getItem(KEY))||{baseline:null,sessions:[],eyeSessions:0,groupSessions:0}}
   catch(e){return {baseline:null,sessions:[],eyeSessions:0,groupSessions:0}}
@@ -106,6 +196,12 @@ function clearPosition(storyId){
 function storyParagraphs(text){
   return text.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
 }
+function loadDailyProgress(){try{return JSON.parse(localStorage.getItem(DAILYKEY))||{chapter:0,completed:[],results:[],streak:0,lastDay:""}}catch(e){return {chapter:0,completed:[],results:[],streak:0,lastDay:""}}}
+function saveDailyProgress(p){localStorage.setItem(DAILYKEY,JSON.stringify(p))}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function adaptiveTarget(){const p=loadDailyProgress(),last=p.results[0];if(!state.baseline)return 160;if(!last)return Math.round(state.baseline.wpm*1.05);if(last.comp>=90)return Math.round(Math.min(last.wpm*1.05,state.baseline.wpm+60));if(last.comp>=80)return Math.round(last.wpm*1.02);if(last.comp>=70)return last.wpm;return Math.max(80,Math.round(last.wpm*.94))}
+function updateStreak(p){const t=todayKey();if(p.lastDay===t)return;const y=new Date(Date.now()-86400000).toISOString().slice(0,10);p.streak=p.lastDay===y?p.streak+1:1;p.lastDay=t}
+
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function words(text){return text.trim().split(/\s+/).filter(Boolean)}
 function calcWpm(count,seconds){return seconds>0?Math.round(count/(seconds/60)):0}
@@ -121,15 +217,7 @@ function clearTimers(){
   if(groupTimer){clearTimeout(groupTimer);groupTimer=null}
   if(eyeTimer){clearInterval(eyeTimer);eyeTimer=null}
 }
-function nav(){
-  return `<div class="nav">
-    <button onclick="home()">🏠<small>Home</small></button>
-    <button onclick="baselineIntro()">🎯<small>Baseline</small></button>
-    <button onclick="training()">🏃<small>Training</small></button>
-    <button onclick="library()">📚<small>Library</small></button>
-    <button onclick="progress()">📈<small>Progress</small></button>
-  </div>`
-}
+function nav(){return `<div class="nav"><button onclick="home()">🏠<small>Home</small></button><button onclick="dailyTraining()">📖<small>Today</small></button><button onclick="baselineIntro()">🎯<small>Baseline</small></button><button onclick="training()">🏃<small>Training</small></button><button onclick="bookHome()">📚<small>Book</small></button><button onclick="library()">📗<small>Stories</small></button><button onclick="progress()">📈<small>Progress</small></button></div>`}
 function shell(title,body){app.innerHTML=`${nav()}<div class="card"><h2>${title}</h2>${body}</div>`}
 
 function home(){
@@ -146,6 +234,7 @@ function home(){
     </div>`:`<div class="notice">You have not completed your baseline yet. Do this first so the course can adapt to your starting point.</div>
       <button onclick="baselineIntro()">Start Baseline Test</button>`}
   </div>
+  <div class="card"><h2>📖 Today's Practice</h2><div class="stats"><div class="stat"><b>${adaptiveTarget()}</b><span>Suggested WPM</span></div><div class="stat"><b>${loadDailyProgress().streak}</b><span>Day streak</span></div></div><p class="muted">Your target adjusts according to speed and comprehension.</p><button onclick="dailyTraining()">Start Today's 15-Minute Session</button></div>
   <div class="card"><h2>Today's Training</h2>
     <p class="muted">A short, structured course. Speed is useful only when you still understand what you read.</p>
     <button onclick="eyeTraining()">1. Eye Focus <small>· 3 min</small></button>
@@ -416,12 +505,30 @@ function submitStoryQuiz(seconds,wpm){
   <p class="${comp>=70?"success":"notice"}">${comp>=70?"Good. Next time we can increase pace slightly.":"Slow down a little and focus on understanding before increasing speed."}</p><button onclick="home()">Home</button><button class="secondary" onclick="progress()">View Progress</button></div>`;
 }
 
+/* ---------- Real Daily Book ---------- */
+function bookHome(){clearTimers();const p=loadDailyProgress(),n=Math.min(p.chapter,DAILY_BOOK.chapters.length-1),last=p.results[0];app.innerHTML=`${nav()}<div class="card"><span class="pill">Daily Practice Book · Level ${DAILY_BOOK.level}</span><h2>${esc(DAILY_BOOK.title)}</h2><p class="muted">${esc(DAILY_BOOK.description)}<br>by ${esc(DAILY_BOOK.author)}</p><div class="stats"><div class="stat"><b>${p.completed.length}/${DAILY_BOOK.chapters.length}</b><span>Chapters</span></div><div class="stat"><b>${adaptiveTarget()}</b><span>Next target WPM</span></div><div class="stat"><b>${last?last.wpm:"—"}</b><span>Last WPM</span></div><div class="stat"><b>${last?last.comp+"%":"—"}</b><span>Last comprehension</span></div></div><div class="progressbar" style="margin:12px 0"><i style="width:${p.completed.length/DAILY_BOOK.chapters.length*100}%"></i></div><h3>Continue: ${esc(DAILY_BOOK.chapters[n].title)}</h3><p class="muted">Suggested pace: <b>${adaptiveTarget()} WPM</b>.</p><button onclick="openBook(${n})">Continue Reading</button><button class="secondary" onclick="bookChapters()">Chapter List</button></div>`}
+function bookChapters(){clearTimers();const p=loadDailyProgress();app.innerHTML=`${nav()}<div class="card"><h2>${esc(DAILY_BOOK.title)}</h2>${DAILY_BOOK.chapters.map((c,i)=>{const done=p.completed.includes(i),open=i===0||p.completed.includes(i-1);return `<div class="card" style="margin:9px 0;background:#fbfefd"><b>${done?'✅':open?'📖':'🔒'} ${esc(c.title)}</b><p class="muted">${words(c.text).length} words</p>${open?`<button onclick="openBook(${i})">${done?'Read Again':'Start Chapter'}</button>`:`<span class="pill">Complete previous chapter</span>`}</div>`}).join('')}</div>`}
+function openBook(i){const p=loadDailyProgress();if(i>0&&!p.completed.includes(i-1)){alert('Complete the previous chapter first.');return}const ch=DAILY_BOOK.chapters[i];currentStory={id:'daily-'+i,title:ch.title,text:ch.text};sessionStart=Date.now();app.innerHTML=`${nav()}<div class="card"><div class="row" style="justify-content:space-between"><span class="pill">Chapter ${i+1} / ${DAILY_BOOK.chapters.length}</span><span id="bookClock" class="pill">0:00</span></div><h2>${esc(ch.title)}</h2><p class="muted">${words(ch.text).length} words · Suggested target: <b>${adaptiveTarget()} WPM</b></p><div class="reading">${esc(ch.text)}</div><button onclick="finishBook(${i})">Finish Reading & Check Comprehension</button><button class="secondary" onclick="bookHome()">Save & Exit</button></div>`;timer=setInterval(()=>{const e=document.getElementById('bookClock');if(e)e.textContent=clock(Date.now()-sessionStart)},1000)}
+const BOOKQ=[
+[['What did Daniel find at the station?','A letter','A ticket in an envelope','A map','A key',1],['What time was on the ticket?','8:15 p.m.','10:30 p.m.','11:47 p.m.','Midnight',2],['What did the note say?','Find the train','Bring the blue key','Meet Marcus','Visit the lighthouse',1],['Who met Daniel at North Harbour?','Mr Tan','Mrs Lee','Marcus','The station master',2],['What did Daniel remember?','An old blue key','A clock','A boat','A map',0]],
+[['Where was the signal box?','Behind trees near the old railway','Inside the museum','At the lighthouse','Under the bridge',0],['What did they find under the floorboard?','The blue key','A folded paper','A lantern','A ticket',1],['What did the paper show?','The harbour with three circles','A train timetable','A family tree','A treasure chest',0],['Who entered the box?','Mr Tan','An elderly visitor','A man with a metal case','Mrs Lee',2],['What did the man do?','He laughed','He became angry','He called Daniel','He left a key',1]],
+[['Who was the lighthouse keeper?','Mrs Lee','Mrs Tan','A railway worker','Marcus',0],['What was the arrow?','A switch','A tide mark','A road','A bridge',1],['When did the hidden path appear?','Sunrise','Noon','Low tide','A storm',2],['What did the ticket time help identify?','A train','The tide','Dinner','A meeting',1],['What did Mrs Lee give Daniel?','A map','A key','A lantern','A radio',2]],
+[['What did the hidden path lead to?','A stone platform','A station','A forest','A museum',0],['What was in the storage space?','Books','Railway tools, a lamp and a box','Money','Food',1],['What colour was the lock?','Red','Green','Blue','Black',2],['Who appeared on the cliff?','Mr Tan','The stranger','Mrs Lee','Marcus',1],['Why did Daniel distrust him?','His story seemed false','He was a policeman','He knew Marcus','He had a lantern',0]],
+[['Who examined the box?','Mr Tan','The baker','The station master','Daniel’s parents',0],['What had the harbour been used for?','Sports','Scientific equipment transfer','Fishing only','Passenger trains',1],['What was missing from records?','Maps','Several boxes','A lighthouse','Tickets',1],['What did they find by the floorboard?','A footprint','A bicycle','A key','A boat',0],['What did the message say?','The train is late','The key was never lost; it was moved','Meet at midnight','Leave the harbour',1]],
+[['Where was the blue key?','The museum','Daniel’s parents’ attic','The lighthouse','The bridge',1],['What did it open?','A door','The wooden box','A train','A cabinet',1],['What was inside?','Instruments and a notebook','Money','Tickets','Maps only',0],['Who wrote the notebook?','Daniel','Samuel Reed','Mr Tan','Marcus',1],['What did the museum display?','Only the key','The box, notebook, map and key','The stranger’s case','The train',1]],
+[['What did the museum hold?','A concert','A small exhibition','A race','A meeting',1],['What did the ticket time indicate?','A train departure','The tide and hidden platform','Museum hours','Dinner',1],['What did the old visitor remember?','The signal box was connected to the harbour','Daniel as a child','A lost bicycle','A storm',0],['What was the mystery really about?','Gold','Forgotten local connections','A stolen train','A secret weapon',1],['What did Daniel realise?','Discoveries can be close to home','Trains were dangerous','The harbour was empty','Maps were useless',0]],
+[['What did Daniel do at the museum?','Sold books','Helped catalogue material','Drove trains','Repaired boats',1],['What did Mr Tan give him?','A blue key','A new envelope','A ticket','A lantern',1],['What did the photograph show?','An old coastal road','A city','A mountain','A ship',0],['What did the note say?','The journey is over','There is another story waiting','Find the key','Return the ticket',1],['What habit did Daniel value?','Looking carefully','Travelling quickly','Collecting tickets','Avoiding mysteries',0]]];
+function finishBook(i){clearTimers();const sec=Math.max(1,(Date.now()-sessionStart)/1000),wpm=calcWpm(words(DAILY_BOOK.chapters[i].text).length,sec),qs=BOOKQ[i];app.innerHTML=`${nav()}<div class="card"><h2>Chapter ${i+1} Comprehension</h2><p class="muted">Reading speed: <b>${wpm} WPM</b>. Answer from memory.</p>${qs.map((x,n)=>`<div style="margin:18px 0"><b>${n+1}. ${esc(x[0])}</b>${x.slice(1,5).map((a,j)=>`<button class="choice" data-bq="${n}" data-ba="${j}" onclick="pickBookAnswer(this)">${esc(a)}</button>`).join('')}</div>`).join('')}<button onclick="submitBook(${i},${sec},${wpm})">Save Chapter Result</button></div>`;window._bookQuiz=qs}
+function pickBookAnswer(el){document.querySelectorAll(`button.choice[data-bq="${el.dataset.bq}"]`).forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}
+function submitBook(i,sec,wpm){const qs=window._bookQuiz,picks=qs.map((_,n)=>document.querySelector(`.choice[data-bq="${n}"].selected`));if(picks.some(x=>!x)){alert('Please answer all 5 questions.');return}const score=picks.reduce((n,x,j)=>n+(Number(x.dataset.ba)===qs[j][5]?1:0),0),comp=score*20,eff=effective(wpm,comp),p=loadDailyProgress();if(!p.completed.includes(i))p.completed.push(i);p.completed.sort((a,b)=>a-b);p.chapter=Math.min(DAILY_BOOK.chapters.length-1,Math.max(...p.completed,0)+1);p.results.unshift({date:Date.now(),chapter:i,wpm,comp,effective:eff,seconds:sec});updateStreak(p);saveDailyProgress(p);state.sessions.unshift({date:Date.now(),story:DAILY_BOOK.title+' — '+DAILY_BOOK.chapters[i].title,wpm,comp,effective:eff,seconds:sec});save();app.innerHTML=`${nav()}<div class="card"><h2>Today's Result</h2><div class="stats"><div class="stat"><b>${wpm}</b><span>WPM</span></div><div class="stat"><b>${comp}%</b><span>Comprehension</span></div><div class="stat"><b>${eff}</b><span>Effective WPM</span></div><div class="stat"><b>${clock(sec*1000)}</b><span>Reading time</span></div></div><p class="${comp>=85?'success':comp>=70?'notice':'error'}">${comp>=85?'Excellent comprehension. Your next target can increase.':comp>=70?'Good understanding. Keep this pace for now.':'Comprehension dropped. The next target has been reduced.'}</p><p><b>Next suggested target: ${adaptiveTarget()} WPM</b></p><button onclick="bookHome()">Continue Book</button><button class="secondary" onclick="home()">Home</button></div>`}
+function dailyTraining(){clearTimers();if(!state.baseline){baselineIntro();return}const p=loadDailyProgress();app.innerHTML=`${nav()}<div class="card"><span class="pill">Daily Course</span><h2>Today's 15-Minute Practice</h2><p class="muted">Suggested target: <b>${adaptiveTarget()} WPM</b>.</p><div class="card" style="margin:9px 0"><b>1 · Eye Focus</b><p class="muted">About 3 minutes.</p><button onclick="eyeTraining()">Start</button></div><div class="card" style="margin:9px 0"><b>2 · Word Groups</b><p class="muted">About 3 minutes.</p><button onclick="groupTraining()">Start</button></div><div class="card" style="margin:9px 0"><b>3 · Book Reading</b><p class="muted">Chapter ${Math.min(p.chapter+1,DAILY_BOOK.chapters.length)} of ${DAILY_BOOK.chapters.length}.</p><button onclick="bookHome()">Continue Book</button></div></div>`}
 /* ---------- Progress ---------- */
 function progress(){
   clearTimers();const b=state.baseline,s=state.sessions;
   const best=s.reduce((m,x)=>Math.max(m,x.wpm),0),bestEff=s.reduce((m,x)=>Math.max(m,x.effective),0);
   shell("Progress",`
     ${b?`<h3>Baseline</h3><div class="stats"><div class="stat"><b>${b.wpm}</b><span>WPM</span></div><div class="stat"><b>${b.comp}%</b><span>Comprehension</span></div><div class="stat"><b>${b.effective}</b><span>Effective WPM</span></div><div class="stat"><b>${fmtDate(b.date)}</b><span>Date</span></div></div>`:`<div class="notice">Complete the baseline first.</div>`}
+    <h3 style="margin-top:20px">Book Course</h3>${(()=>{const p=loadDailyProgress(),last=p.results[0];return `<div class="stats"><div class="stat"><b>${p.completed.length}/${DAILY_BOOK.chapters.length}</b><span>Chapters</span></div><div class="stat"><b>${p.streak}</b><span>Day streak</span></div><div class="stat"><b>${last?last.wpm:"—"}</b><span>Last book WPM</span></div><div class="stat"><b>${last?last.comp+"%":"—"}</b><span>Last comprehension</span></div></div>`})()}
     <h3 style="margin-top:20px">Training Totals</h3><div class="stats"><div class="stat"><b>${s.length}</b><span>Story sessions</span></div><div class="stat"><b>${state.eyeSessions}</b><span>Eye sessions</span></div><div class="stat"><b>${state.groupSessions}</b><span>Group sessions</span></div><div class="stat"><b>${best}</b><span>Best WPM</span></div></div>
     <h3 style="margin-top:20px">Reading History</h3>
     ${s.length?`<table><tr><th>Date</th><th>Story</th><th>WPM</th><th>Comp.</th><th>Effective</th></tr>${s.slice(0,12).map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.story)}</td><td>${x.wpm}</td><td>${x.comp}%</td><td>${x.effective}</td></tr>`).join("")}</table>`:`<p class="muted">No story sessions yet.</p>`}
